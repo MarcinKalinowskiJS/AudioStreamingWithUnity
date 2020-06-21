@@ -62,10 +62,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\AudioController.cs" />
-    <Compile Include="Assets\Scripts\NetworkController.cs" />
-    <Compile Include="Assets\Scripts\ObserverSender.cs" />
-    <Compile Include="Assets\Scripts\TransferData.cs" />
+    <Compile Include="Assets\Scripts\Model\Additional\ObserverSender.cs" />
+    <Compile Include="Assets\Scripts\Model\Additional\TestText.cs" />
+    <Compile Include="Assets\Scripts\Model\Additional\TransferData.cs" />
+    <Compile Include="Assets\Scripts\Model\AppModel.cs" />
+    <Compile Include="Assets\Scripts\Model\AudioModel.cs" />
+    <Compile Include="Assets\Scripts\Model\NetworkModel.cs" />
+    <Compile Include="Assets\Scripts\Presentation\Presenter.cs" />
+    <Compile Include="Assets\Scripts\View\View.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>X:/Program Files/Unity Projects/AudioStreaming/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
