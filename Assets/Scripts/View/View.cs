@@ -8,27 +8,32 @@ public class View : MonoBehaviour
 
     private UnityEngine.UI.Button buttonSend;
     private UnityEngine.UI.Button buttonReceive;
+    private UnityEngine.UI.Toggle toggleSend;
+    private UnityEngine.UI.Toggle toggleReceive;
     private UnityEngine.UI.Dropdown originIP;
     private UnityEngine.UI.InputField originPort;
     private UnityEngine.UI.InputField destinationIP;
     private UnityEngine.UI.InputField destinationPort;
     private UnityEngine.UI.Text scrollAreaText;
-    ObserverSender o = null;
 
     // Start is called before the first frame update
     void Start()
     {
-        o = new ObserverSender("", "", "", ObserverSender.Protocol.UDP);
-        instance = this;
-        link();
+        if (instance == null) {
+            instance = this;
+        }
+        linkUI();
     }
 
-    private void link() {
+    private void linkUI() {
         //View
         buttonSend = GameObject.Find("ButtonSend").GetComponent<UnityEngine.UI.Button>();
         buttonReceive = GameObject.Find("ButtonReceive").GetComponent<UnityEngine.UI.Button>();
+        toggleSend = GameObject.Find("ToggleSend").GetComponent<UnityEngine.UI.Toggle>();
+        toggleReceive = GameObject.Find("ToggleReceive").GetComponent<UnityEngine.UI.Toggle>();
         buttonSend.onClick.AddListener(onClickSend);
         buttonReceive.onClick.AddListener(onClickReceive);
+        
 
         //NetworkController
         originIP = GameObject.Find("OriginIP").GetComponent<UnityEngine.UI.Dropdown>();
@@ -50,7 +55,7 @@ public class View : MonoBehaviour
         
     }
 
-    /*public static View Instance {
+    public static View Instance {
         get {
             if (instance == null) {
                 GameObject go = new GameObject();
@@ -58,38 +63,21 @@ public class View : MonoBehaviour
             }
             return instance;
         }
-    }*/
+    }
 
     public void onClickSend()
     {
-        //NetworkModel.Instance.sendChatText("Test!");
-        o.updateObserverErgoSendData(new byte[] { 1, 5 });
+        NetworkModel.Instance.sendChatText("Test!");
         //getAll();
-        o.receiveUDP();
     }
 
     public void onClickReceive()
     {
-        //TODO: Fix wrong input field selection by find method
-        UnityEngine.Object ifs = GameObject.FindObjectOfType(typeof(UnityEngine.UI.InputField));
-        o.receiveUDP();
-        string lRD = "";
-        if (o.lastReceivedData != null)
-        {
-            foreach (byte b in o.lastReceivedData)
-            {
-                lRD += b.ToString() + " | ";
-            }
-        }
-        Debug.Log("Last: " + lRD);
-        if (lRD.Equals(""))
-        {
-            ((UnityEngine.UI.InputField)ifs).text = "Nothing received";
-        }
-        else
-        {
-            ((UnityEngine.UI.InputField)ifs).text = lRD;
-        }
+        UnityEngine.Events.UnityEvent receiveDataFromClient = new UnityEngine.Events.UnityEvent();
+        //Presenter.Instance.receive(receiveDataFromClient);
+        NetworkModel.Instance.receiveUDPAsync();
+
+        //scrollAreaText.text = data;
     }
 
     public string getAll()
