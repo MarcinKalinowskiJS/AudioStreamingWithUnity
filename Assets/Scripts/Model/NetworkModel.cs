@@ -1,26 +1,17 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Model.Additional;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
 using UnityEngine.UI;
+using static Assets.Scripts.Model.Additional.TransferProtocol;
 
 public class NetworkModel
 {
+    public enum Protocol { UDP, UDPAsync, TCP }
     private static NetworkModel instance = null;
-    List<ObserverSender> observers;
-    ObserverSender o;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+    List<TransferProtocol> observers;
 
     public static NetworkModel Instance
     {
@@ -29,7 +20,7 @@ public class NetworkModel
             if (instance == null)
             {
                 instance = new NetworkModel();
-                instance.o = new ObserverSender("", "", "", ObserverSender.Protocol.UDP);
+                instance.observers = new List<TransferProtocol>();
             }
             return instance;
         }
@@ -46,16 +37,48 @@ public class NetworkModel
 
     public void sendChatText(string text) {
         byte[] bytesToSend = System.Text.Encoding.UTF8.GetBytes(text);
-        o.sendUDP(bytesToSend);      
+        //o.sendUDP(bytesToSend);      
+        throw new NotImplementedException();
     }
 
-    public void receive() {
-        o.receive();
-    }
-
-
-    public void addObserver(string data)
+    public List<byte[]> Receive()
     {
-        //o = new ObserverSender("1", "1", "1", ObserverSender.Protocol.UDP);
+        List<byte[]> receivedData = new List<byte[]>();
+        foreach (TransferProtocol tp in observers)
+        {
+            receivedData.Add(tp.receive());
+        }
+        if (receivedData.Count > 0)
+        {
+            return receivedData;
+        }
+        return null;
+    }
+
+    public bool Send(byte[] data) {
+        bool sended = false;
+        foreach (TransferProtocol tp in observers) {
+            if (tp.isSendingActive()) {
+                tp.send(data);
+                sended = true;
+            }
+        }
+        return sended;
+    }
+
+    public void addObserver(string system, Protocol protocol, ConnectionType connectionType, int receivePort, string destinationIP, int destinationPort)
+    {
+        switch (protocol)
+        {
+            case Protocol.UDP:
+                observers.Add(new UDP(system, connectionType, receivePort, destinationIP, destinationPort));
+                break;
+            case Protocol.UDPAsync:
+                observers.Add(new UDPAsync(system, connectionType, receivePort, destinationIP, destinationPort));
+                break;
+            default:
+                Debug.Log("Unsupported");
+                break;
+        }
     }
 }

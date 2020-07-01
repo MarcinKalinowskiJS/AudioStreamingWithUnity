@@ -62,9 +62,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Model\Additional\ObserverSender.cs" />
     <Compile Include="Assets\Scripts\Model\Additional\TestText.cs" />
-    <Compile Include="Assets\Scripts\Model\Additional\TransferData.cs" />
+    <Compile Include="Assets\Scripts\Model\Additional\TransferProtocol.cs" />
+    <Compile Include="Assets\Scripts\Model\Additional\UDP.cs" />
+    <Compile Include="Assets\Scripts\Model\Additional\UDPAsync.cs" />
     <Compile Include="Assets\Scripts\Model\AppModel.cs" />
     <Compile Include="Assets\Scripts\Model\AudioModel.cs" />
     <Compile Include="Assets\Scripts\Model\NetworkModel.cs" />

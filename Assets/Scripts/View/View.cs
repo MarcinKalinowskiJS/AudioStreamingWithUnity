@@ -65,19 +65,32 @@ public class View : MonoBehaviour
         }
     }
 
+    public void addConnection() {
+        Presenter.Instance.addConnection(65535, "192.168.0.3", 65535);
+    }
+
     public void onClickSend()
     {
-        NetworkModel.Instance.sendChatText("Test!");
-        //getAll();
+        //NetworkModel.Instance.sendChatText("Test!");
+        Presenter.Instance.send(new byte[] { 1, 2, 5 });
     }
 
     public void onClickReceive()
     {
-        UnityEngine.Events.UnityEvent receiveDataFromClient = new UnityEngine.Events.UnityEvent();
-        //Presenter.Instance.receive(receiveDataFromClient);
-        NetworkModel.Instance.receiveUDPAsync();
+        //UnityEngine.Events.UnityEvent receiveDataFromClient = new UnityEngine.Events.UnityEvent();
+        string s = "";
+        List<byte[]> receivedData = Presenter.Instance.receive();
+        s += (receivedData == null ? "NULL" : receivedData[0].Length + " " + decodeByteToString(receivedData[0]) );
 
-        //scrollAreaText.text = data;
+        scrollAreaText.text = s;
+    }
+
+    public string decodeByteToString(byte[] data) {
+        string s = "";
+        foreach (byte b in data) {
+            s += b + " ";
+        }
+        return s;
     }
 
     public string getAll()
