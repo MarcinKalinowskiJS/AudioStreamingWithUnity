@@ -11,8 +11,10 @@ namespace Assets.Scripts.Model.Additional
         public enum ConnectionType { Receive, Send, ReceiveAndSend };
         public string system;
         public ConnectionType connectionType;
+        public string destinationIP;
+        public int destinationPort;
 
-        public TransferProtocol(string system, ConnectionType connectionType) {
+        public TransferProtocol(string system, ConnectionType connectionType, string destinationIP, int destinationPort) {
             this.system = system;
             this.connectionType = connectionType;
         }

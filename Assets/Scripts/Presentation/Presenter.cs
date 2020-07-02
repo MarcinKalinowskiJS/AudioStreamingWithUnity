@@ -30,4 +30,18 @@ public class Presenter
     public List<byte[]> receive() {
         return NetworkModel.Instance.Receive();
     }
+
+    public List<string> getConnectedIPs() {
+        List<string> connectedIPs = new List<string>();
+        foreach (TransferProtocol tp in NetworkModel.Instance.getConnections()) {
+            connectedIPs.Add(tp.destinationIP + " : " + tp.destinationPort);
+        }
+
+        return connectedIPs;
+    }
+
+    public TransferProtocol getConnection(string IP, int port)
+    {
+        return NetworkModel.Instance.getConnections().Find(x => x.destinationIP.Equals(IP) & x.destinationPort == port);
+    }
 }

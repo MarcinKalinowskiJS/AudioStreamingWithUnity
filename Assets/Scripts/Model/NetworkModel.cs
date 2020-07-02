@@ -81,4 +81,8 @@ public class NetworkModel
                 break;
         }
     }
+
+    public List<TransferProtocol> getConnections() {
+        return observers;
+    }
 }

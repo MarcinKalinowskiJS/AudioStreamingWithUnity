@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Model.Additional
 {
+    //https://stackoverflow.com/questions/5964846/get-client-ip-from-udp-packages-received-with-udpclient
     class UDPAsync : TransferProtocol
     {
         UdpClient udpClient, udpServer; //Server-Receive Client-Send
@@ -21,7 +22,7 @@ namespace Assets.Scripts.Model.Additional
         }
 
         public UDPAsync(string system, ConnectionType connectionType, int receivePort, string destinationIP, int destinationPort) 
-            : base(system, connectionType){
+            : base(system, connectionType, destinationIP, destinationPort){
             udpServer = new UdpClient(receivePort);
             udpClient = new UdpClient();
             System.Net.IPEndPoint epClient = new IPEndPoint(System.Net.IPAddress.Parse(destinationIP), destinationPort);

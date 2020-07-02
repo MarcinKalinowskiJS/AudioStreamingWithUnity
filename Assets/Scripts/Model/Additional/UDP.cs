@@ -12,16 +12,22 @@ namespace Assets.Scripts.Model.Additional
     class UDP : TransferProtocol
     {
         UdpClient udpClient, udpServer; //Server-Receive Client-Send
-        System.Net.IPEndPoint epServer;
+        System.Net.IPEndPoint epClient, epServer;
 
         public UDP(string system, ConnectionType connectionType, int receivePort, string destinationIP, int destinationPort) 
-            : base(system, connectionType){
-            Debug.Log("Created UDP Connection");
-            udpServer = new UdpClient(receivePort);
-            udpClient = new UdpClient();
-            System.Net.IPEndPoint epClient = new IPEndPoint(System.Net.IPAddress.Parse(destinationIP), destinationPort);
-            udpClient.Connect(epClient);
-            epServer = new IPEndPoint(System.Net.IPAddress.Any, receivePort);
+            : base(system, connectionType, destinationIP, destinationPort){
+            if (base.isReceivingActive())
+            {
+                udpServer = new UdpClient(receivePort);
+                epServer = new IPEndPoint(System.Net.IPAddress.Any, receivePort);
+            }
+
+            if (base.isSendingActive())
+            {
+                udpClient = new UdpClient();
+                epClient = new IPEndPoint(System.Net.IPAddress.Parse(destinationIP), destinationPort);
+                udpClient.Connect(epClient);
+            }
         }
 
         public override bool send(byte[] data) {
