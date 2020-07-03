@@ -21,8 +21,8 @@ namespace Assets.Scripts.Model.Additional
             set { isReceiveUDPCancellationRequested = value; }
         }
 
-        public UDPAsync(string system, ConnectionType connectionType, int receivePort, string destinationIP, int destinationPort) 
-            : base(system, connectionType, destinationIP, destinationPort){
+        public UDPAsync(string system, ConnectionType connectionType, string receiveIP, int receivePort, string destinationIP, int destinationPort) 
+            : base(system, connectionType, receiveIP, receivePort, destinationIP, destinationPort){
             udpServer = new UdpClient(receivePort);
             udpClient = new UdpClient();
             System.Net.IPEndPoint epClient = new IPEndPoint(System.Net.IPAddress.Parse(destinationIP), destinationPort);

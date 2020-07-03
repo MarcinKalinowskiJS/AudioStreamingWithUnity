@@ -69,6 +69,8 @@
     <Compile Include="Assets\Scripts\Model\AppModel.cs" />
     <Compile Include="Assets\Scripts\Model\AudioModel.cs" />
     <Compile Include="Assets\Scripts\Model\NetworkModel.cs" />
+    <Compile Include="Assets\Scripts\Overall\TransformFindDeepChildExtension.cs" />
+    <Compile Include="Assets\Scripts\Overall\TransformGetAllChilds.cs" />
     <Compile Include="Assets\Scripts\Presentation\Presenter.cs" />
     <Compile Include="Assets\Scripts\View\ViewTabAll.cs" />
     <Compile Include="Assets\Scripts\View\ViewTabNew.cs" />

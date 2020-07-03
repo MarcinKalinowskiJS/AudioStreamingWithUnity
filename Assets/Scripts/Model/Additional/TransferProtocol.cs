@@ -11,16 +11,21 @@ namespace Assets.Scripts.Model.Additional
         public enum ConnectionType { Receive, Send, ReceiveAndSend };
         public string system;
         public ConnectionType connectionType;
-        public string destinationIP;
-        public int destinationPort;
+        public string receiveIP, destinationIP;
+        public int receivePort, destinationPort;
 
-        public TransferProtocol(string system, ConnectionType connectionType, string destinationIP, int destinationPort) {
+        public TransferProtocol(string system, ConnectionType connectionType, string receiveIP, int receivePort, string destinationIP, int destinationPort) {
             this.system = system;
             this.connectionType = connectionType;
+            this.receiveIP = receiveIP;
+            this.receivePort = receivePort;
+            this.destinationIP = destinationIP;
+            this.destinationPort = destinationPort;
         }
 
         public abstract bool send(byte[] data);
         public abstract byte[] receive();
+
         public bool isSendingActive() {
             switch (connectionType) {
                 case ConnectionType.Send: return true;
@@ -36,6 +41,17 @@ namespace Assets.Scripts.Model.Additional
                 case ConnectionType.Receive: return true;
                 case ConnectionType.ReceiveAndSend: return true;
                 default: return false;
+            }
+        }
+
+        public bool isReceivingAndSendingActive() {
+            if (connectionType == ConnectionType.ReceiveAndSend)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }

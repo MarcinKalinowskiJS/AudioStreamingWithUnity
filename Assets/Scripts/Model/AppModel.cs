@@ -11,7 +11,6 @@ public class AppModel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        instance = GameObject.Find("AppGameObject").GetComponent<AppModel>();
     }
 
     public static AppModel Instance

@@ -66,15 +66,15 @@ public class NetworkModel
         return sended;
     }
 
-    public void addObserver(string system, Protocol protocol, ConnectionType connectionType, int receivePort, string destinationIP, int destinationPort)
+    public void addObserver(string system, Protocol protocol, ConnectionType connectionType, string receiveIP, int receivePort, string destinationIP, int destinationPort)
     {
         switch (protocol)
         {
             case Protocol.UDP:
-                observers.Add(new UDP(system, connectionType, receivePort, destinationIP, destinationPort));
+                observers.Add(new UDP(system, connectionType, receiveIP, receivePort, destinationIP, destinationPort));
                 break;
             case Protocol.UDPAsync:
-                observers.Add(new UDPAsync(system, connectionType, receivePort, destinationIP, destinationPort));
+                observers.Add(new UDPAsync(system, connectionType, receiveIP, receivePort, destinationIP, destinationPort));
                 break;
             default:
                 Debug.Log("Unsupported");

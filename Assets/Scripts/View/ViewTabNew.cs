@@ -8,10 +8,11 @@ public class ViewTabNew : MonoBehaviour
 
     private UnityEngine.UI.Button buttonSend;
     private UnityEngine.UI.Button buttonReceive;
+    private UnityEngine.UI.Button buttonAdd;
     private UnityEngine.UI.Toggle toggleSend;
     private UnityEngine.UI.Toggle toggleReceive;
-    private UnityEngine.UI.Dropdown originIP;
-    private UnityEngine.UI.InputField originPort;
+    private UnityEngine.UI.Dropdown receiveIP;
+    private UnityEngine.UI.InputField receivePort;
     private UnityEngine.UI.InputField destinationIP;
     private UnityEngine.UI.InputField destinationPort;
     private UnityEngine.UI.Text scrollAreaText;
@@ -23,37 +24,51 @@ public class ViewTabNew : MonoBehaviour
             instance = this;
         }
         linkUI();
+        addTestConnection();
+    }
+
+    private void addTestConnection() {
+        Presenter.Instance.addConnection("192.168.0.3", "65535", "192.168.0.3", "65535");
     }
 
     private void linkUI() {
         //View
         buttonSend = GameObject.Find("ButtonSend").GetComponent<UnityEngine.UI.Button>();
         buttonReceive = GameObject.Find("ButtonReceive").GetComponent<UnityEngine.UI.Button>();
+        buttonAdd = GameObject.Find("ButtonAdd").GetComponent<UnityEngine.UI.Button>();
         toggleSend = GameObject.Find("ToggleSend").GetComponent<UnityEngine.UI.Toggle>();
         toggleReceive = GameObject.Find("ToggleReceive").GetComponent<UnityEngine.UI.Toggle>();
         buttonSend.onClick.AddListener(onClickSend);
         buttonReceive.onClick.AddListener(onClickReceive);
-        
+        buttonAdd.onClick.AddListener(onClickAddConnection);
+
 
         //NetworkModel
-        originIP = GameObject.Find("OriginIP").GetComponent<UnityEngine.UI.Dropdown>();
-        originPort = GameObject.Find("OriginPort").GetComponent<UnityEngine.UI.InputField>();
+        receiveIP = GameObject.Find("ReceiveIP").GetComponent<UnityEngine.UI.Dropdown>();
+        receivePort = GameObject.Find("ReceivePort").GetComponent<UnityEngine.UI.InputField>();
         destinationIP = GameObject.Find("DestinationIP").GetComponent<UnityEngine.UI.InputField>();
         destinationPort = GameObject.Find("DestinationPort").GetComponent<UnityEngine.UI.InputField>();
         scrollAreaText = GameObject.Find("ScrollArea").GetComponentInChildren<UnityEngine.UI.Text>();
-        originIP.options.Clear();
-        foreach (System.Net.IPAddress iPA in NetworkModel.Instance.getOriginIPs())
-        {
-            originIP.options.Add(new UnityEngine.UI.Dropdown.OptionData() { text = iPA.ToString() });
-        }
-        originIP.RefreshShownValue();
 
+        //TODO:move refreshReceiveIPDropdown to some more appropiate place
+        refreshReceiveIPDropdown();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    private void refreshReceiveIPDropdown() {
+        receiveIP.options.Clear();
+
+        //TODO: Change to Presenter getOriginIPs()
+        foreach (System.Net.IPAddress iPA in NetworkModel.Instance.getOriginIPs())
+        {
+            receiveIP.options.Add(new UnityEngine.UI.Dropdown.OptionData() { text = iPA.ToString() });
+        }
+        receiveIP.RefreshShownValue();
     }
 
     public static ViewTabNew Instance {
@@ -66,8 +81,8 @@ public class ViewTabNew : MonoBehaviour
         }
     }
 
-    public void addConnection() {
-        Presenter.Instance.addConnection(65535, "192.168.0.3", 65535);
+    public void onClickAddConnection() {
+        Presenter.Instance.addConnection(getSelectedOriginIPString(), receivePort.text, destinationIP.text, destinationPort.text);
     }
 
     public void onClickSend()
@@ -97,8 +112,8 @@ public class ViewTabNew : MonoBehaviour
     public string getAll()
     {
         string all = "\nBeginning:";
-        all += "\nOriginIP: " + originIP.options[originIP.value].text;
-        all += "\noriginPort: " + originPort.text;
+        all += "\nOriginIP: " + receiveIP.options[receiveIP.value].text;
+        all += "\noriginPort: " + receivePort.text;
         all += "\ndestinationIP: " + destinationIP.text;
         all += "\ndestinationPort: " + destinationPort.text;
         all += "\nscrollArea: " + scrollAreaText.text;
@@ -109,6 +124,6 @@ public class ViewTabNew : MonoBehaviour
 
     public string getSelectedOriginIPString()
     {
-        return originIP.options[originIP.value].text;
+        return receiveIP.options[receiveIP.value].text;
     }
 }

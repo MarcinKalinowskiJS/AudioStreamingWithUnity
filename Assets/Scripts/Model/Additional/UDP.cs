@@ -14,8 +14,8 @@ namespace Assets.Scripts.Model.Additional
         UdpClient udpClient, udpServer; //Server-Receive Client-Send
         System.Net.IPEndPoint epClient, epServer;
 
-        public UDP(string system, ConnectionType connectionType, int receivePort, string destinationIP, int destinationPort) 
-            : base(system, connectionType, destinationIP, destinationPort){
+        public UDP(string system, ConnectionType connectionType, string receiveIP, int receivePort, string destinationIP, int destinationPort) 
+            : base(system, connectionType, receiveIP, receivePort, destinationIP, destinationPort){
             if (base.isReceivingActive())
             {
                 udpServer = new UdpClient(receivePort);
@@ -43,7 +43,6 @@ namespace Assets.Scripts.Model.Additional
 
         public override byte[] receive()
         {
-            Debug.Log("Active? " + base.isReceivingActive());
             if (base.isReceivingActive())
             {
                 if (udpServer.Available > 0)
