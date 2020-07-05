@@ -9,7 +9,11 @@ using UnityEngine;
 
 namespace Assets.Scripts.Model.Additional
 {
+    //TODO: Get the ip of received packets
     //https://stackoverflow.com/questions/5964846/get-client-ip-from-udp-packages-received-with-udpclient
+
+    //TODO: Send async
+    //https://docs.microsoft.com/pl-pl/dotnet/api/system.net.sockets.udpclient.sendasync?view=netcore-3.1
     class UDPAsync : TransferProtocol
     {
         UdpClient udpClient, udpServer; //Server-Receive Client-Send

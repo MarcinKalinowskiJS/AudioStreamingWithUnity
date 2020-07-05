@@ -62,29 +62,38 @@ public class Presenter
     }
 
     public List<string> getConnectionsAdjusted() {
-        string connectionAdjusted;
         List<string> connectionsAdjustedList = new List<string>();
         foreach (TransferProtocol tp in NetworkModel.Instance.getConnections()) {
-            connectionAdjusted = "";
-            switch (tp.connectionType) {
-                case TransferProtocol.ConnectionType.Receive:
-                    connectionAdjusted = tp.receiveIP + ":" + tp.receivePort + "<-";
-                    break;
-                case TransferProtocol.ConnectionType.ReceiveAndSend:
-                    connectionAdjusted = tp.receiveIP + ":" + tp.receivePort + "<->" + tp.destinationIP + ":" + tp.destinationPort;
-                    break;
-                case TransferProtocol.ConnectionType.Send:
-                    connectionAdjusted = "->" + tp.destinationIP + ":" + tp.destinationPort;
-                    break;
-                default:
-                    connectionAdjusted = "Error in connection";
-                    break;
-            }
-
-            connectionsAdjustedList.Add(connectionAdjusted);
+            connectionsAdjustedList.Add(getConnectionAdjusted(tp));
         }
-
-        //TODO: replace in return
         return connectionsAdjustedList;
+    }
+
+    public List<string> getOriginIPsString() {
+        List<string> receiveIPs = new List<string>();
+        foreach (System.Net.IPAddress iPA in NetworkModel.Instance.getOriginIPs()) {
+            receiveIPs.Add(iPA.ToString());
+        }
+        return receiveIPs;
+    }
+
+    public string getConnectionAdjusted(TransferProtocol tp) {
+        string connectionAdjusted = "";
+        switch (tp.connectionType)
+        {
+            case TransferProtocol.ConnectionType.Receive:
+                connectionAdjusted = tp.receiveIP + ":" + tp.receivePort + "<-";
+                break;
+            case TransferProtocol.ConnectionType.ReceiveAndSend:
+                connectionAdjusted = tp.receiveIP + ":" + tp.receivePort + "<->" + tp.destinationIP + ":" + tp.destinationPort;
+                break;
+            case TransferProtocol.ConnectionType.Send:
+                connectionAdjusted = "->" + tp.destinationIP + ":" + tp.destinationPort;
+                break;
+            default:
+                connectionAdjusted = "Error in connection";
+                break;
+        }
+        return connectionAdjusted;
     }
 }

@@ -33,11 +33,11 @@ public class ViewTabNew : MonoBehaviour
 
     private void linkUI() {
         //View
-        buttonSend = GameObject.Find("ButtonSend").GetComponent<UnityEngine.UI.Button>();
-        buttonReceive = GameObject.Find("ButtonReceive").GetComponent<UnityEngine.UI.Button>();
-        buttonAdd = GameObject.Find("ButtonAdd").GetComponent<UnityEngine.UI.Button>();
-        toggleSend = GameObject.Find("ToggleSend").GetComponent<UnityEngine.UI.Toggle>();
-        toggleReceive = GameObject.Find("ToggleReceive").GetComponent<UnityEngine.UI.Toggle>();
+        buttonSend = GameObject.Find("SendButton").GetComponent<UnityEngine.UI.Button>();
+        buttonReceive = GameObject.Find("ReceiveButton").GetComponent<UnityEngine.UI.Button>();
+        buttonAdd = GameObject.Find("AddButton").GetComponent<UnityEngine.UI.Button>();
+        toggleSend = GameObject.Find("SendToggle").GetComponent<UnityEngine.UI.Toggle>();
+        toggleReceive = GameObject.Find("ReceiveToggle").GetComponent<UnityEngine.UI.Toggle>();
         buttonSend.onClick.AddListener(onClickSend);
         buttonReceive.onClick.AddListener(onClickReceive);
         buttonAdd.onClick.AddListener(onClickAddConnection);
@@ -63,10 +63,9 @@ public class ViewTabNew : MonoBehaviour
     private void refreshReceiveIPDropdown() {
         receiveIP.options.Clear();
 
-        //TODO: Change to Presenter getOriginIPs()
-        foreach (System.Net.IPAddress iPA in NetworkModel.Instance.getOriginIPs())
+        foreach (string s in Presenter.Instance.getOriginIPsString())
         {
-            receiveIP.options.Add(new UnityEngine.UI.Dropdown.OptionData() { text = iPA.ToString() });
+            receiveIP.options.Add(new UnityEngine.UI.Dropdown.OptionData() { text = s });
         }
         receiveIP.RefreshShownValue();
     }
