@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Model.Additional;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,24 +8,22 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts.Overall
 {
-    public class DropdownStoreObjectExtension<T> : Dropdown
+    public class DropdownStoreObjectExtension : Dropdown
     {
-        Dropdown parent;
-        List<T> dropdownObjects;
+        List<TransferProtocol> dropdownObjects;
 
-        public DropdownStoreObjectExtension (Dropdown d)
+        public DropdownStoreObjectExtension ()
         {
-            parent = d;
-            dropdownObjects = new List<T>();
+            dropdownObjects = new List<TransferProtocol>();
         }
 
-        public void AddOptionWithObject(T methodObject, Dropdown.OptionData od) {
+        public void AddOptionWithObject(TransferProtocol methodObject, Dropdown.OptionData od) {
             dropdownObjects.Add(methodObject);
             base.options.Add(od);
         }
 
         public void ClearOptionsWithObjects() {
-            dropdownObjects = new List<T>();
+            dropdownObjects = new List<TransferProtocol>();
             base.options.Clear();
         }
     }
