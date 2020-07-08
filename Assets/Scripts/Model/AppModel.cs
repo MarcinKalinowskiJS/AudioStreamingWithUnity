@@ -11,6 +11,9 @@ public class AppModel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Entity Component System
+        //https://www.raywenderlich.com/7630142-entity-component-system-for-unity-getting-startedhttps://www.raywenderlich.com/7630142-entity-component-system-for-unity-getting-started
+
     }
 
     public static AppModel Instance

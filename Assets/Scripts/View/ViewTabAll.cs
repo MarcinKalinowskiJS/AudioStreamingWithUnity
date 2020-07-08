@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class ViewTabAll : MonoBehaviour
 {
-    private DropdownStoreObjectExtension connectionsDropdown;
+    private DropdownStoreTransferProtocolExtension connectionsDropdown;
     private UnityEngine.UI.Dropdown connectionTypeDropdown;
     private UnityEngine.UI.Dropdown receiveIP;
     private UnityEngine.UI.InputField receivePort;
@@ -20,11 +20,34 @@ public class ViewTabAll : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //GameObject.Find("Canvas").AddComponent<DropdownStoreObjectExtension>();
-        //connectionsDropdown = new DropdownStoreObjectExtension<TransferProtocol>(AppModel.Instance.tabAllPanel
+        //GameObject.Find("Canvas").AddComponent<DropdownStoreTransferProtocolExtension>();
+        //connectionsDropdown = new DropdownStoreTransferProtocolExtension<TransferProtocol>(AppModel.Instance.tabAllPanel
         //            .transform.FindDeepChild("ConnectionsDropdown").gameObject.GetComponent<UnityEngine.UI.Dropdown>());
-        Debug.Log("tap: " + AppModel.Instance.tabAllPanel);
-        //connectionsDropdown = AppModel.Instance.tabAllPanel.transform.FindDeepChild("ConnectionsDropdownToReplaceByScript").gameObject;
+        
+
+        //TODO: Transfer linked fields from dropdown to DropdownStoreTransferProtocolExcension component
+        GameObject goTmp0 = AppModel.Instance.tabAllPanel.transform.FindDeepChild("ConnectionsDropdownToReplaceByScript").gameObject;
+        GameObject goTmp0Clone = Instantiate(goTmp0);
+        DestroyImmediate(goTmp0.GetComponent<UnityEngine.UI.Dropdown>());
+        connectionsDropdown = goTmp0.AddComponent<DropdownStoreTransferProtocolExtension>();
+        DropdownStoreTransferProtocolExtension.Copy(goTmp0Clone.GetComponent<UnityEngine.UI.Dropdown>(), ref connectionsDropdown);
+        //CopyValues(goTmp0Clone.GetComponent<UnityEngine.UI.Dropdown>(), goTmp0.AddComponent<DropdownStoreTransferProtocolExtension>());
+        Destroy(goTmp0Clone);
+
+        //Destroy(goTmp1);
+        //goTmp2.AddComponent<>
+
+        //Destroy(goTmp.GetComponent<UnityEngine.UI.Dropdown>());
+        //foreach (Transform tTmp in goTmp.transform.Find("")) {
+        //    Debug.Log("Destroy:");
+        //    Destroy(tTmp.gameObject);
+        //}
+        //connectionsDropdown = goTmp.AddComponent<DropdownStoreTransferProtocolExtension>();
+
+
+        //connectionsDropdown.transform.position = goTmp.GetComponent<UnityEngine.UI.Dropdown>().transform.position;
+        //connectionsDropdown.transform.rotation = goTmp.GetComponent<UnityEngine.UI.Dropdown>().transform.rotation;
+
         //TODO: Replacing component dropdown for extended dropdown
         //TODO: Create hierarchy linker singleton class
         connectionTypeDropdown = AppModel.Instance.tabAllPanel.transform.FindDeepChild("ConnectionTypeDropdown").gameObject.GetComponent<UnityEngine.UI.Dropdown>();
@@ -35,12 +58,16 @@ public class ViewTabAll : MonoBehaviour
 
         //Replacing actual connections dropdown with extended dropdown for storing objects
         //GameObject goTmp = Instantiate(prefab, transform.position, Quaternion.identity, this.transform);//AppModel.Instance.tabAllPanel.transform.Find("Content").gameObject.transform);
-        Destroy(connectionsDropdown, 0.0F);
+        
         //connectionsDropdown = goTmp.GetComponent < prefab.GetType().FullName > ();
-        //DropdownStoreObjectExtension
 
         refreshConnectionsDropdown();
         //loadConnectionDetails();
+    }
+
+    public void CopyValues<T>(T from, T to)
+    {
+        JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(from), to);
     }
 
     // Update is called once per frame
