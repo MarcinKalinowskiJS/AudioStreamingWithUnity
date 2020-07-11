@@ -8,6 +8,13 @@ public class AppModel : MonoBehaviour
 
     public GameObject tabAllPanel = null;
     public GameObject tabNewPanel = null;
+    //DO STREAMOWANIA AUDIO W UNITY https://forum.unity.com/threads/singleton-monobehaviour-script.99971/ 
+    //Then do not ever add it to something, just call MyClass.Instance whenever you need it. Note: If you want it to persist accross 
+    //scenes and not be destroyed and recreated add DontDestroyOnLoad(this); in the Awake Function. Another Option if you really want 
+    //to add it to a particular object is to set mInstance in the MyClass's Awake function and if mInstance is not null Destroy any 
+    //subsequent attempts to create an Instance of MyClass. But in that case do not Set mInstance in the Instance Property, 
+    //as it's being set by Awake.
+
     // Start is called before the first frame update
     void Start()
     {

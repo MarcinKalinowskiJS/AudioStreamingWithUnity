@@ -3,6 +3,7 @@ using Assets.Scripts.Overall;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class ViewTabAll : MonoBehaviour
@@ -28,9 +29,11 @@ public class ViewTabAll : MonoBehaviour
         //TODO: Transfer linked fields from dropdown to DropdownStoreTransferProtocolExcension component
         GameObject goTmp0 = AppModel.Instance.tabAllPanel.transform.FindDeepChild("ConnectionsDropdownToReplaceByScript").gameObject;
         GameObject goTmp0Clone = Instantiate(goTmp0);
-        DestroyImmediate(goTmp0.GetComponent<UnityEngine.UI.Dropdown>());
-        connectionsDropdown = goTmp0.AddComponent<DropdownStoreTransferProtocolExtension>();
-        DropdownStoreTransferProtocolExtension.Copy(goTmp0Clone.GetComponent<UnityEngine.UI.Dropdown>(), ref connectionsDropdown);
+        //DestroyImmediate(goTmp0.GetComponent<UnityEngine.UI.Dropdown>());
+        //connectionsDropdown = goTmp0.AddComponent<DropdownStoreTransferProtocolExtension>();
+        //EditorGUILayout.ObjectField(goTmp0)
+        Debug.Log("test2: " + goTmp0.GetComponent<UnityEngine.UI.Dropdown>().GetType().GetField("Template").GetValue(goTmp0));
+        //DropdownStoreTransferProtocolExtension.Copy(goTmp0Clone.GetComponent<UnityEngine.UI.Dropdown>(), ref connectionsDropdown);
         //CopyValues(goTmp0Clone.GetComponent<UnityEngine.UI.Dropdown>(), goTmp0.AddComponent<DropdownStoreTransferProtocolExtension>());
         Destroy(goTmp0Clone);
 
