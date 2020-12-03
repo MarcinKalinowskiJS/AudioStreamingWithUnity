@@ -32,6 +32,7 @@ public class ViewTabAll : MonoBehaviour
         //DestroyImmediate(goTmp0.GetComponent<UnityEngine.UI.Dropdown>());
         //connectionsDropdown = goTmp0.AddComponent<DropdownStoreTransferProtocolExtension>();
         //EditorGUILayout.ObjectField(goTmp0)
+        //HERETODO: Add functionality to a dropdown. Now trying to copy all fields and properties and create a extended dropdown
         Debug.Log("test2: " + goTmp0.GetComponent<UnityEngine.UI.Dropdown>().GetType().GetField("Template").GetValue(goTmp0));
         //DropdownStoreTransferProtocolExtension.Copy(goTmp0Clone.GetComponent<UnityEngine.UI.Dropdown>(), ref connectionsDropdown);
         //CopyValues(goTmp0Clone.GetComponent<UnityEngine.UI.Dropdown>(), goTmp0.AddComponent<DropdownStoreTransferProtocolExtension>());

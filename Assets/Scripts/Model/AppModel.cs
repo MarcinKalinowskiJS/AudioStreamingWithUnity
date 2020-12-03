@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AppModel : MonoBehaviour
 {
+    
     private static AppModel instance;
 
     public GameObject tabAllPanel = null;
