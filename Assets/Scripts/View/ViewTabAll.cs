@@ -3,6 +3,7 @@ using Assets.Scripts.Overall;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,16 +28,14 @@ public class ViewTabAll : MonoBehaviour
         
 
         //TODO: Transfer linked fields from dropdown to DropdownStoreTransferProtocolExcension component
-        GameObject goTmp0 = AppModel.Instance.tabAllPanel.transform.FindDeepChild("ConnectionsDropdownToReplaceByScript").gameObject;
-        GameObject goTmp0Clone = Instantiate(goTmp0);
         //DestroyImmediate(goTmp0.GetComponent<UnityEngine.UI.Dropdown>());
         //connectionsDropdown = goTmp0.AddComponent<DropdownStoreTransferProtocolExtension>();
         //EditorGUILayout.ObjectField(goTmp0)
         //HERETODO: Add functionality to a dropdown. Now trying to copy all fields and properties and create a extended dropdown
-        Debug.Log("test2: " + goTmp0.GetComponent<UnityEngine.UI.Dropdown>().GetType().GetField("Template").GetValue(goTmp0));
+        //Debug.Log("test2: " + ((UnityEngine.UI.Dropdown)goTmp0.GetComponent<UnityEngine.UI.Dropdown>()));//GetField("Template").GetValue(goTmp0));
         //DropdownStoreTransferProtocolExtension.Copy(goTmp0Clone.GetComponent<UnityEngine.UI.Dropdown>(), ref connectionsDropdown);
         //CopyValues(goTmp0Clone.GetComponent<UnityEngine.UI.Dropdown>(), goTmp0.AddComponent<DropdownStoreTransferProtocolExtension>());
-        Destroy(goTmp0Clone);
+        //Destroy(goTmp0Clone);
 
         //Destroy(goTmp1);
         //goTmp2.AddComponent<>
@@ -67,8 +66,12 @@ public class ViewTabAll : MonoBehaviour
 
         refreshConnectionsDropdown();
         //loadConnectionDetails();
+
     }
 
+    
+
+    //OLDEST
     public void CopyValues<T>(T from, T to)
     {
         JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(from), to);
