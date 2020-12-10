@@ -24,11 +24,13 @@ public class ViewTabNew : MonoBehaviour
             instance = this;
         }
         linkUI();
-        addTestConnection();
+        addTestConnections();
     }
 
-    private void addTestConnection() {
+    private void addTestConnections() {
         Presenter.Instance.addConnection("192.168.0.3", "65535", "192.168.0.3", "65535");
+        Presenter.Instance.addConnection("192.168.0.3", "65534", "192.168.0.1", "65535");
+        Presenter.Instance.addConnection("192.168.0.3", "65533", "192.168.0.100", "65535");
     }
 
     private void linkUI() {
@@ -80,7 +82,7 @@ public class ViewTabNew : MonoBehaviour
         }
     }
 
-    public void onClickAddConnection() {
+    private void onClickAddConnection() {
         Presenter.Instance.addConnection(getSelectedOriginIPString(), receivePort.text, destinationIP.text, destinationPort.text);
     }
 

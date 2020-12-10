@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Model.Additional;
+using Assets.Scripts.Overall;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -95,5 +96,13 @@ public class Presenter
                 break;
         }
         return connectionAdjusted;
+    }
+
+    public List<string> getAllConnectionTypes() {
+        List<string> types = new List<string>();
+        foreach (TransferProtocol.ConnectionType ct in EnumUtil.GetValues<TransferProtocol.ConnectionType>()) {
+            types.Add(ct.ToString());
+        }
+        return types;
     }
 }

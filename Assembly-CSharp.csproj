@@ -69,8 +69,9 @@
     <Compile Include="Assets\Scripts\Model\AppModel.cs" />
     <Compile Include="Assets\Scripts\Model\AudioModel.cs" />
     <Compile Include="Assets\Scripts\Model\NetworkModel.cs" />
-    <Compile Include="Assets\Scripts\Overall\CopyItems.cs" />
     <Compile Include="Assets\Scripts\Overall\DropdownStoreTransferProtocolExtension.cs" />
+    <Compile Include="Assets\Scripts\Overall\DropdownUtil.cs" />
+    <Compile Include="Assets\Scripts\Overall\EnumUtil.cs" />
     <Compile Include="Assets\Scripts\Overall\TransformFindDeepChildExtension.cs" />
     <Compile Include="Assets\Scripts\Overall\TransformGetAllChilds.cs" />
     <Compile Include="Assets\Scripts\Presentation\Presenter.cs" />

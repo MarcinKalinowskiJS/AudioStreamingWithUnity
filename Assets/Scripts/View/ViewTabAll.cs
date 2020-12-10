@@ -9,72 +9,32 @@ using UnityEngine;
 
 public class ViewTabAll : MonoBehaviour
 {
+    private GameObject TabAllPanel;
     private DropdownStoreTransferProtocolExtension connectionsDropdown;
     private UnityEngine.UI.Dropdown connectionTypeDropdown;
     private UnityEngine.UI.Dropdown receiveIP;
     private UnityEngine.UI.InputField receivePort;
     private UnityEngine.UI.InputField destinationIP;
     private UnityEngine.UI.InputField destinationPort;
-    public GameObject prefab;
     //TODO: Load TransferProtocol object to be viewed and edited
 
 
     // Start is called before the first frame update
     void Start()
     {
-        //GameObject.Find("Canvas").AddComponent<DropdownStoreTransferProtocolExtension>();
-        //connectionsDropdown = new DropdownStoreTransferProtocolExtension<TransferProtocol>(AppModel.Instance.tabAllPanel
-        //            .transform.FindDeepChild("ConnectionsDropdown").gameObject.GetComponent<UnityEngine.UI.Dropdown>());
-        
 
-        //TODO: Transfer linked fields from dropdown to DropdownStoreTransferProtocolExcension component
-        //DestroyImmediate(goTmp0.GetComponent<UnityEngine.UI.Dropdown>());
-        //connectionsDropdown = goTmp0.AddComponent<DropdownStoreTransferProtocolExtension>();
-        //EditorGUILayout.ObjectField(goTmp0)
-        //HERETODO: Add functionality to a dropdown. Now trying to copy all fields and properties and create a extended dropdown
-        //Debug.Log("test2: " + ((UnityEngine.UI.Dropdown)goTmp0.GetComponent<UnityEngine.UI.Dropdown>()));//GetField("Template").GetValue(goTmp0));
-        //DropdownStoreTransferProtocolExtension.Copy(goTmp0Clone.GetComponent<UnityEngine.UI.Dropdown>(), ref connectionsDropdown);
-        //CopyValues(goTmp0Clone.GetComponent<UnityEngine.UI.Dropdown>(), goTmp0.AddComponent<DropdownStoreTransferProtocolExtension>());
-        //Destroy(goTmp0Clone);
-
-        //Destroy(goTmp1);
-        //goTmp2.AddComponent<>
-
-        //Destroy(goTmp.GetComponent<UnityEngine.UI.Dropdown>());
-        //foreach (Transform tTmp in goTmp.transform.Find("")) {
-        //    Debug.Log("Destroy:");
-        //    Destroy(tTmp.gameObject);
-        //}
-        //connectionsDropdown = goTmp.AddComponent<DropdownStoreTransferProtocolExtension>();
-
-
-        //connectionsDropdown.transform.position = goTmp.GetComponent<UnityEngine.UI.Dropdown>().transform.position;
-        //connectionsDropdown.transform.rotation = goTmp.GetComponent<UnityEngine.UI.Dropdown>().transform.rotation;
-
-        //TODO: Replacing component dropdown for extended dropdown
-        //TODO: Create hierarchy linker singleton class
+        TabAllPanel = AppModel.Instance.tabAllPanel;
         connectionTypeDropdown = AppModel.Instance.tabAllPanel.transform.FindDeepChild("ConnectionTypeDropdown").gameObject.GetComponent<UnityEngine.UI.Dropdown>();
-        receiveIP = GameObject.Find("ReceiveIP").GetComponent<UnityEngine.UI.Dropdown>();
-        receivePort = GameObject.Find("ReceivePort").GetComponent<UnityEngine.UI.InputField>();
-        destinationIP = GameObject.Find("DestinationIP").GetComponent<UnityEngine.UI.InputField>();
-        destinationPort = GameObject.Find("DestinationPort").GetComponent<UnityEngine.UI.InputField>();
+        receiveIP = TabAllPanel.transform.FindDeepChild("ReceiveIP").GetComponent<UnityEngine.UI.Dropdown>();
+        receivePort = TabAllPanel.transform.FindDeepChild("ReceivePort").GetComponent<UnityEngine.UI.InputField>();
+        destinationIP = TabAllPanel.transform.FindDeepChild("DestinationIP").GetComponent<UnityEngine.UI.InputField>();
+        destinationPort = TabAllPanel.transform.FindDeepChild("DestinationPort").GetComponent<UnityEngine.UI.InputField>();
+        connectionsDropdown = TabAllPanel.transform.FindDeepChild("ConnectionsDropdown").GetComponent<DropdownStoreTransferProtocolExtension>();
+        connectionsDropdown.onValueChanged.AddListener(onValueChangedInConnectionsDropdown);
 
-        //Replacing actual connections dropdown with extended dropdown for storing objects
-        //GameObject goTmp = Instantiate(prefab, transform.position, Quaternion.identity, this.transform);//AppModel.Instance.tabAllPanel.transform.Find("Content").gameObject.transform);
-        
-        //connectionsDropdown = goTmp.GetComponent < prefab.GetType().FullName > ();
 
         refreshConnectionsDropdown();
-        //loadConnectionDetails();
-
-    }
-
-    
-
-    //OLDEST
-    public void CopyValues<T>(T from, T to)
-    {
-        JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(from), to);
+        loadConnectionDetails();
     }
 
     // Update is called once per frame
@@ -82,25 +42,59 @@ public class ViewTabAll : MonoBehaviour
     {
     }
 
+    public void onValueChangedInConnectionsDropdown(int arg0)
+    {
+        loadConnectionDetails();
+    }
+
     public void refreshConnectionsDropdown() {
         //connectionsDropdown.transform.Translate(new Vector3(100, 100, 0));
         //Commented because is invoked on click in the app on tab(All)
-        /*connectionsDropdown.ClearOptionsWithObjects();
+        
+        connectionsDropdown.ClearOptionsWithObjects();
         foreach (TransferProtocol tp in Presenter.Instance.getConnections()) {
             connectionsDropdown.AddOptionWithObject(tp, new UnityEngine.UI.Dropdown.OptionData() { text = Presenter.Instance.getConnectionAdjusted(tp) });
         }
         connectionsDropdown.RefreshShownValue();
-        */
     }
 
     public void loadConnectionDetails() {
-        /*receiveIP.options.Clear
-        foreach (string ip in Presenter.Instance.getOriginIPsString()) {
-            receiveIP.options.Add(new UnityEngine.UI.Dropdown.OptionData() { text = ip });
+        if (connectionsDropdown.options.Count != 0)
+        {
+            receiveIP.addBulkSelectRefresh(Presenter.Instance.getOriginIPsString, getSelectedConnectionTP().receiveIP, Presenter.Instance, "getOriginIPsString");
+            /*
+            receiveIP.options.Clear();
+            foreach (string ip in Presenter.Instance.getOriginIPsString())
+            {
+                receiveIP.options.Add(new UnityEngine.UI.Dropdown.OptionData() { text = ip });
+            }
+            for (int i = 0; i < receiveIP.options.Count; i++) {
+                if (String.Equals(receiveIP.options[i].text, getSelectedConnectionTP().receiveIP)) {
+                    receiveIP.value = i;
+                    receiveIP.RefreshShownValue();
+                    break;
+                }
+            }
+
+            connectionTypeDropdown.options.Clear();
+            foreach (string s in Presenter.Instance.getAllConnectionTypes()) {
+                connectionTypeDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData() { text = ip });
+            }
+            */
         }
-        receiveIP.value = Presenter.Instance.getConnection()
-        */
     }
 
+    public TransferProtocol getSelectedConnectionTP() {
+        return connectionsDropdown.GetTransferProtocol(connectionsDropdown.value);
+    }
     //TODO: Check package Unity UI Extensions
 }
+/*
+System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace();
+string list = "";
+        for (int i = 0; i<st.FrameCount; i++) {
+            list += st.GetFrame(i).GetMethod().Name + "<=";
+        }
+
+        Debug.Log("L: " + list);
+        */

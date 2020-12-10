@@ -29,35 +29,12 @@ namespace Assets.Scripts.Overall
             base.options.Clear();
         }
 
-        public static void Copy(Dropdown d, ref DropdownStoreTransferProtocolExtension dsoe) {
-            dsoe.template = d.template;
-            dsoe.captionText = d.captionText;
-            dsoe.captionImage = d.captionImage;
+        public List<TransferProtocol> GetTransferProtocols() {
+            return dropdownObjects;
         }
 
-        //Using new copy method
-        public static void CopyDropdownWithRelatedComponents(GameObject goNew, GameObject goOld)
-        {
-
-
-            if(1==0)
-            goNew.CopyComponentWithGetting(goOld.GetComponent<UnityEngine.UI.Image>(), (original, copy) =>
-            {
-                copy.sprite = Sprite.Instantiate<Sprite>(original.sprite);
-            });
-
-
-
-            //Dropdown //Not all
-            goNew.CopyComponentWithGetting(goOld.GetComponent<UnityEngine.UI.Dropdown>(), (original, copy) =>
-            {
-                copy.image = Image.Instantiate<Image>(original.image)
-                copy.targetGraphic = original.targetGraphic;
-                copy.interactable = original.interactable;
-                //copy.transition = Transition.Instantiate<Transition>(original.transition);
-                copy.targetGraphic = original.targetGraphic;
-            });
-
+        public TransferProtocol GetTransferProtocol(int index) {
+            return dropdownObjects[index];
         }
     }
 }
