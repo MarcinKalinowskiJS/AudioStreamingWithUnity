@@ -8,17 +8,16 @@ namespace Assets.Scripts.Overall
 {
     public static class DropdownUtil
     {
-
-        //HERETODO: invoking the method of object. Maybe the arguments should have been rethinked.
-        public static void addBulkSelectRefresh (this UnityEngine.UI.Dropdown d, List<string> options, string selectOption, Type type, string methodName) {
+        public static void addBulkSelectRefresh (this UnityEngine.UI.Dropdown d, string selectOption, object objectToGetList, string methodName) {
             d.options.Clear();
-            foreach (string s in type.GetMethod(methodName).Invoke(methodName))
+            List<string> stringList = (List<string>) objectToGetList.GetType().GetMethod(methodName).Invoke(objectToGetList, null);
+            foreach (string s in stringList)
             {
                 d.options.Add(new UnityEngine.UI.Dropdown.OptionData() { text = s });
             }
-            for (int i = 0; i < this.options.Count; i++)
+            for (int i = 0; i < d.options.Count; i++)
             {
-                if (String.Equals(this.options[i].text, selectOption))
+                if (String.Equals(d.options[i].text, selectOption))
                 {
                     d.value = i;
                     d.RefreshShownValue();

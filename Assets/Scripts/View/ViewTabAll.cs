@@ -16,7 +16,6 @@ public class ViewTabAll : MonoBehaviour
     private UnityEngine.UI.InputField receivePort;
     private UnityEngine.UI.InputField destinationIP;
     private UnityEngine.UI.InputField destinationPort;
-    //TODO: Load TransferProtocol object to be viewed and edited
 
 
     // Start is called before the first frame update
@@ -61,40 +60,25 @@ public class ViewTabAll : MonoBehaviour
     public void loadConnectionDetails() {
         if (connectionsDropdown.options.Count != 0)
         {
-            receiveIP.addBulkSelectRefresh(Presenter.Instance.getOriginIPsString, getSelectedConnectionTP().receiveIP, Presenter.Instance, "getOriginIPsString");
-            /*
-            receiveIP.options.Clear();
-            foreach (string ip in Presenter.Instance.getOriginIPsString())
-            {
-                receiveIP.options.Add(new UnityEngine.UI.Dropdown.OptionData() { text = ip });
-            }
-            for (int i = 0; i < receiveIP.options.Count; i++) {
-                if (String.Equals(receiveIP.options[i].text, getSelectedConnectionTP().receiveIP)) {
-                    receiveIP.value = i;
-                    receiveIP.RefreshShownValue();
-                    break;
-                }
-            }
-
-            connectionTypeDropdown.options.Clear();
-            foreach (string s in Presenter.Instance.getAllConnectionTypes()) {
-                connectionTypeDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData() { text = ip });
-            }
-            */
+            receiveIP.addBulkSelectRefresh(getSelectedConnectionTP().receiveIP, 
+                Presenter.Instance, "getOriginIPsString");
+            connectionTypeDropdown.addBulkSelectRefresh(getSelectedConnectionTP().connectionType.ToString(),
+                Presenter.Instance, "getAllConnectionTypes");
         }
     }
 
     public TransferProtocol getSelectedConnectionTP() {
         return connectionsDropdown.GetTransferProtocol(connectionsDropdown.value);
     }
-    //TODO: Check package Unity UI Extensions
+//TODO: Check package Unity UI Extensions
 }
 /*
 System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace();
 string list = "";
-        for (int i = 0; i<st.FrameCount; i++) {
-            list += st.GetFrame(i).GetMethod().Name + "<=";
-        }
+for (int i = 0; i<st.FrameCount; i++) {
+    list += st.GetFrame(i).GetMethod().Name + "<=";
+}
 
-        Debug.Log("L: " + list);
-        */
+Debug.Log("L: " + list);
+*/
+          
