@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,6 +17,11 @@ public class ViewTabNew : MonoBehaviour
     private UnityEngine.UI.InputField destinationIP;
     private UnityEngine.UI.InputField destinationPort;
     private UnityEngine.UI.Text scrollAreaText;
+    private List<Tuple<string, DateTime>> InfoScrollAreaTextQueue = new List<Tuple<string, DateTime>>();
+    private float InfoScrollAreaMessageEvery = 0.5f; //Message every x seconds
+    private int InfoScrollAreaTextLines = 5; //Max lines of messages
+
+    //HERETODO: repair add connection button
 
     // Start is called before the first frame update
     void Start()
@@ -50,16 +56,46 @@ public class ViewTabNew : MonoBehaviour
         receivePort = GameObject.Find("ReceivePort").GetComponent<UnityEngine.UI.InputField>();
         destinationIP = GameObject.Find("DestinationIP").GetComponent<UnityEngine.UI.InputField>();
         destinationPort = GameObject.Find("DestinationPort").GetComponent<UnityEngine.UI.InputField>();
-        scrollAreaText = GameObject.Find("ScrollArea").GetComponentInChildren<UnityEngine.UI.Text>();
+        scrollAreaText = GameObject.Find("InfoScrollArea").GetComponentInChildren<UnityEngine.UI.Text>();
 
         //TODO:move refreshReceiveIPDropdown to some more appropiate place
         refreshReceiveIPDropdown();
+
+        //Start info scroll area text coroutine
+        StartCoroutine("WaitAndPrintToInfoScrollArea");
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void addTextToInfoScrollArea(string text) {
+        InfoScrollAreaTextQueue.Add(new Tuple<string, DateTime>(text, DateTime.Now));
+    }
+
+    // every 500 ms print
+    private IEnumerator WaitAndPrintToInfoScrollArea()
+    {
+        while (true)
+        {
+            //If there are messages in the queue
+            if (InfoScrollAreaTextQueue.Count > 0){
+                //Append text
+                scrollAreaText.text += InfoScrollAreaTextQueue[InfoScrollAreaTextQueue.Count - 1].Item2 + " " + 
+                    InfoScrollAreaTextQueue[InfoScrollAreaTextQueue.Count - 1].Item1 + "\n";
+                
+                //Delete last text in the queue
+                InfoScrollAreaTextQueue.RemoveAt(InfoScrollAreaTextQueue.Count-1);
+
+                //If text for user is too long then delete last line
+                if (scrollAreaText.text.Split('\n').Length > InfoScrollAreaTextLines) {
+                    scrollAreaText.text = scrollAreaText.text.Substring(scrollAreaText.text.IndexOf('\n')+1);
+                }
+            }
+            yield return new WaitForSeconds(InfoScrollAreaMessageEvery);
+        }
     }
 
     private void refreshReceiveIPDropdown() {
@@ -84,6 +120,8 @@ public class ViewTabNew : MonoBehaviour
 
     private void onClickAddConnection() {
         Presenter.Instance.addConnection(getSelectedOriginIPString(), receivePort.text, destinationIP.text, destinationPort.text);
+        //Adding message to the info panel
+        addTextToInfoScrollArea("Adding connection: " + getSelectedOriginIPString() + " " + receivePort.text + " ...");
     }
 
     public void onClickSend()
