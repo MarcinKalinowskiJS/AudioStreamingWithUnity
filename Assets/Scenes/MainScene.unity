@@ -4002,8 +4002,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
-  - {fileID: 1149751269}
   - {fileID: 1682353839}
+  - {fileID: 1149751269}
   m_Father: {fileID: 39273849}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5319,7 +5319,6 @@ GameObject:
   - component: {fileID: 1393730100}
   - component: {fileID: 1393730102}
   - component: {fileID: 1393730101}
-  - component: {fileID: 1393730103}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -5378,136 +5377,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '1New Text
-
-    2New Text
-
-    3New Text
-
-    4New Text
-
-    5New Text
-
-    6New
-    Text
-
-    7New Text
-
-    8New Text
-
-    9New Text
-
-    10New Text
-
-    11New
-    Text
-
-    12New Text
-
-    13New Text
-
-    14New Text
-
-    15New Text
-
-    16New
-    Text
-
-    17New Text
-
-    18New Text
-
-    19New Text
-
-    20New Text
-
-    1New
-    Text
-
-    2New Text
-
-    3New Text
-
-    4New Text
-
-    5New Text
-
-    6New Text
-
-    7New
-    Text
-
-    8New Text
-
-    9New Text
-
-    10New Text
-
-    11New Text
-
-    12New
-    Text
-
-    13New Text
-
-    14New Text
-
-    15New Text
-
-    16New Text
-
-    17New
-    Text
-
-    18New Text
-
-    19New Text
-
-    20New Text
-
-    1New Text
-
-    2New
-    Text
-
-    3New Text
-
-    4New Text
-
-    5New Text
-
-    6New Text
-
-    7New Text
-
-    8New
-    Text
-
-    9New Text
-
-    10New Text
-
-    11New Text
-
-    12New Text
-
-    13New
-    Text
-
-    14New Text
-
-    15New Text
-
-    16New Text
-
-    17New Text
-
-    18New
-    Text
-
-    19New Text
-
-    20New Text'
+  m_Text: WELCOME! :-)
 --- !u!222 &1393730102
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5516,18 +5386,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1393730099}
   m_CullTransparentMesh: 0
---- !u!114 &1393730103
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1393730099}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 449fb8067cf542746a496c8b542ad732, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1397750560
 GameObject:
   m_ObjectHideFlags: 0
@@ -6372,7 +6230,7 @@ PrefabInstance:
     - target: {fileID: 7195701772432747002, guid: c73d822e2cf768a4096a5f89b5bfa744,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7195701772432747002, guid: c73d822e2cf768a4096a5f89b5bfa744,
         type: 3}
@@ -8212,7 +8070,7 @@ PrefabInstance:
     - target: {fileID: 7195701772432747002, guid: c73d822e2cf768a4096a5f89b5bfa744,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7195701772432747002, guid: c73d822e2cf768a4096a5f89b5bfa744,
         type: 3}

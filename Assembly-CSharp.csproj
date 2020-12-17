@@ -62,7 +62,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Model\Additional\TestText.cs" />
     <Compile Include="Assets\Scripts\Model\Additional\TransferProtocol.cs" />
     <Compile Include="Assets\Scripts\Model\Additional\UDP.cs" />
     <Compile Include="Assets\Scripts\Model\Additional\UDPAsync.cs" />

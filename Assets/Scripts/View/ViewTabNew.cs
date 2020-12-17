@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Assets.Scripts.Model.Additional;
+using Assets.Scripts.Overall;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +9,7 @@ public class ViewTabNew : MonoBehaviour
 {
     private static ViewTabNew instance = null;
 
+    private GameObject tabNewPanel = null;
     private UnityEngine.UI.Button buttonSend;
     private UnityEngine.UI.Button buttonReceive;
     private UnityEngine.UI.Button buttonAdd;
@@ -17,6 +20,7 @@ public class ViewTabNew : MonoBehaviour
     private UnityEngine.UI.InputField destinationIP;
     private UnityEngine.UI.InputField destinationPort;
     private UnityEngine.UI.Text scrollAreaText;
+    private UnityEngine.UI.InputField dataField;
     private List<Tuple<string, DateTime>> InfoScrollAreaTextQueue = new List<Tuple<string, DateTime>>();
     private float InfoScrollAreaMessageEvery = 0.5f; //Message every x seconds
     private int InfoScrollAreaTextLines = 5; //Max lines of messages
@@ -34,29 +38,32 @@ public class ViewTabNew : MonoBehaviour
     }
 
     private void addTestConnections() {
-        Presenter.Instance.addConnection("192.168.0.3", "65535", "192.168.0.3", "65535");
-        Presenter.Instance.addConnection("192.168.0.3", "65534", "192.168.0.1", "65535");
-        Presenter.Instance.addConnection("192.168.0.3", "65533", "192.168.0.100", "65535");
+        Presenter.Instance.addConnection("Win", NetworkModel.Protocol.UDP, TransferProtocol.ConnectionType.ReceiveAndSend, "192.168.0.3", "65535", "192.168.0.3", "65535");
     }
 
     private void linkUI() {
+        //Main Panel for script
+        tabNewPanel = AppModel.Instance.tabNewPanel;
+
         //View
-        buttonSend = GameObject.Find("SendButton").GetComponent<UnityEngine.UI.Button>();
-        buttonReceive = GameObject.Find("ReceiveButton").GetComponent<UnityEngine.UI.Button>();
-        buttonAdd = GameObject.Find("AddButton").GetComponent<UnityEngine.UI.Button>();
-        toggleSend = GameObject.Find("SendToggle").GetComponent<UnityEngine.UI.Toggle>();
-        toggleReceive = GameObject.Find("ReceiveToggle").GetComponent<UnityEngine.UI.Toggle>();
+        buttonSend = tabNewPanel.transform.FindDeepChild("SendButton").gameObject.GetComponent<UnityEngine.UI.Button>();
+        buttonReceive = tabNewPanel.transform.FindDeepChild("ReceiveButton").gameObject.GetComponent<UnityEngine.UI.Button>();
+        buttonAdd = tabNewPanel.transform.FindDeepChild("AddButton").gameObject.GetComponent<UnityEngine.UI.Button>();
+        toggleSend = tabNewPanel.transform.FindDeepChild("SendToggle").gameObject.GetComponent<UnityEngine.UI.Toggle>();
+        toggleReceive = tabNewPanel.transform.FindDeepChild("ReceiveToggle").gameObject.GetComponent<UnityEngine.UI.Toggle>();
         buttonSend.onClick.AddListener(onClickSend);
         buttonReceive.onClick.AddListener(onClickReceive);
         buttonAdd.onClick.AddListener(onClickAddConnection);
 
 
         //NetworkModel
-        receiveIP = GameObject.Find("ReceiveIP").GetComponent<UnityEngine.UI.Dropdown>();
-        receivePort = GameObject.Find("ReceivePort").GetComponent<UnityEngine.UI.InputField>();
-        destinationIP = GameObject.Find("DestinationIP").GetComponent<UnityEngine.UI.InputField>();
-        destinationPort = GameObject.Find("DestinationPort").GetComponent<UnityEngine.UI.InputField>();
-        scrollAreaText = GameObject.Find("InfoScrollArea").GetComponentInChildren<UnityEngine.UI.Text>();
+        receiveIP = tabNewPanel.transform.FindDeepChild("ReceiveIP").gameObject.GetComponent<UnityEngine.UI.Dropdown>();
+        receivePort = tabNewPanel.transform.FindDeepChild("ReceivePort").gameObject.GetComponent<UnityEngine.UI.InputField>();
+        destinationIP = tabNewPanel.transform.FindDeepChild("DestinationIP").gameObject.GetComponent<UnityEngine.UI.InputField>();
+        destinationPort = tabNewPanel.transform.FindDeepChild("DestinationPort").gameObject.GetComponent<UnityEngine.UI.InputField>();
+        scrollAreaText = tabNewPanel.transform.FindDeepChild("InfoScrollArea").gameObject.GetComponentInChildren<UnityEngine.UI.Text>();
+        dataField = tabNewPanel.transform.FindDeepChild("DataField").gameObject.GetComponentInChildren<UnityEngine.UI.InputField>();
+
 
         //TODO:move refreshReceiveIPDropdown to some more appropiate place
         refreshReceiveIPDropdown();
@@ -75,6 +82,14 @@ public class ViewTabNew : MonoBehaviour
         InfoScrollAreaTextQueue.Add(new Tuple<string, DateTime>(text, DateTime.Now));
     }
 
+    private IEnumerator WaitForReceivingData(TransferProtocol tp) {
+        bool receiveData = true;
+        while (receiveData) {
+            //https://gamedevbeginner.com/coroutines-in-unity-when-and-how-to-use-them/
+            yeild return new WaitUntil(ReceivedData);
+        }
+    }
+
     // every 500 ms print
     private IEnumerator WaitAndPrintToInfoScrollArea()
     {
@@ -83,8 +98,8 @@ public class ViewTabNew : MonoBehaviour
             //If there are messages in the queue
             if (InfoScrollAreaTextQueue.Count > 0){
                 //Append text
-                scrollAreaText.text += InfoScrollAreaTextQueue[InfoScrollAreaTextQueue.Count - 1].Item2 + " " + 
-                    InfoScrollAreaTextQueue[InfoScrollAreaTextQueue.Count - 1].Item1 + "\n";
+                scrollAreaText.text += "\n" + InfoScrollAreaTextQueue[InfoScrollAreaTextQueue.Count - 1].Item2 + " " + 
+                    InfoScrollAreaTextQueue[InfoScrollAreaTextQueue.Count - 1].Item1;
                 
                 //Delete last text in the queue
                 InfoScrollAreaTextQueue.RemoveAt(InfoScrollAreaTextQueue.Count-1);
@@ -100,7 +115,6 @@ public class ViewTabNew : MonoBehaviour
 
     private void refreshReceiveIPDropdown() {
         receiveIP.options.Clear();
-
         foreach (string s in Presenter.Instance.getOriginIPsString())
         {
             receiveIP.options.Add(new UnityEngine.UI.Dropdown.OptionData() { text = s });
@@ -119,31 +133,45 @@ public class ViewTabNew : MonoBehaviour
     }
 
     private void onClickAddConnection() {
-        Presenter.Instance.addConnection(getSelectedOriginIPString(), receivePort.text, destinationIP.text, destinationPort.text);
+        string result = Presenter.Instance.addConnection("Win", NetworkModel.Protocol.UDP, TransferProtocol.ConnectionType.ReceiveAndSend, getSelectedOriginIPString(), receivePort.text, destinationIP.text, destinationPort.text);
         //Adding message to the info panel
-        addTextToInfoScrollArea("Adding connection: " + getSelectedOriginIPString() + " " + receivePort.text + " ...");
+        addTextToInfoScrollArea("Adding connection: " + getSelectedOriginIPString() + " " + receivePort.text + " ..." + result);
     }
 
     public void onClickSend()
     {
         //NetworkModel.Instance.sendChatText("Test!");
-        Presenter.Instance.send(new byte[] { 1, 2, 5 });
+        string message = dataField.text;
+        Presenter.Instance.send(codeStringToByte(message));
+        addTextToInfoScrollArea("Sent:" + message);
+    }
+
+    public byte[] codeStringToByte(string message)
+    {
+        List<byte> byteMessage = new List<byte>();
+        foreach (char c in message)
+        {
+            byteMessage.Add((byte)c);
+        }
+        return byteMessage.ToArray();
     }
 
     public void onClickReceive()
     {
         //UnityEngine.Events.UnityEvent receiveDataFromClient = new UnityEngine.Events.UnityEvent();
-        string s = "";
+        /*string s = "";
         List<byte[]> receivedData = Presenter.Instance.receive();
-        s += (receivedData == null ? "NULL" : receivedData[0].Length + " " + decodeByteToString(receivedData[0]) );
+        s += (receivedData == null ? "NULL" : decodeByteToString(receivedData[0]) );
 
-        scrollAreaText.text = s;
+        addTextToInfoScrollArea("Received:" + s);
+        */
+
     }
 
     public string decodeByteToString(byte[] data) {
         string s = "";
         foreach (byte b in data) {
-            s += b + " ";
+            s += ((char)b);
         }
         return s;
     }

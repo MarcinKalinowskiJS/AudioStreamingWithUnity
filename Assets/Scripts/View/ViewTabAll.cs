@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class ViewTabAll : MonoBehaviour
 {
-    private GameObject TabAllPanel;
+    private GameObject tabAllPanel;
     private DropdownStoreTransferProtocolExtension connectionsDropdown;
     private UnityEngine.UI.Dropdown connectionTypeDropdown;
     private UnityEngine.UI.Dropdown receiveIP;
@@ -22,13 +22,13 @@ public class ViewTabAll : MonoBehaviour
     void Start()
     {
 
-        TabAllPanel = AppModel.Instance.tabAllPanel;
-        connectionTypeDropdown = AppModel.Instance.tabAllPanel.transform.FindDeepChild("ConnectionTypeDropdown").gameObject.GetComponent<UnityEngine.UI.Dropdown>();
-        receiveIP = TabAllPanel.transform.FindDeepChild("ReceiveIP").GetComponent<UnityEngine.UI.Dropdown>();
-        receivePort = TabAllPanel.transform.FindDeepChild("ReceivePort").GetComponent<UnityEngine.UI.InputField>();
-        destinationIP = TabAllPanel.transform.FindDeepChild("DestinationIP").GetComponent<UnityEngine.UI.InputField>();
-        destinationPort = TabAllPanel.transform.FindDeepChild("DestinationPort").GetComponent<UnityEngine.UI.InputField>();
-        connectionsDropdown = TabAllPanel.transform.FindDeepChild("ConnectionsDropdown").GetComponent<DropdownStoreTransferProtocolExtension>();
+        tabAllPanel = AppModel.Instance.tabAllPanel;
+        connectionTypeDropdown = tabAllPanel.transform.FindDeepChild("ConnectionTypeDropdown").gameObject.GetComponent<UnityEngine.UI.Dropdown>();
+        receiveIP = tabAllPanel.transform.FindDeepChild("ReceiveIP").GetComponent<UnityEngine.UI.Dropdown>();
+        receivePort = tabAllPanel.transform.FindDeepChild("ReceivePort").GetComponent<UnityEngine.UI.InputField>();
+        destinationIP = tabAllPanel.transform.FindDeepChild("DestinationIP").GetComponent<UnityEngine.UI.InputField>();
+        destinationPort = tabAllPanel.transform.FindDeepChild("DestinationPort").GetComponent<UnityEngine.UI.InputField>();
+        connectionsDropdown = tabAllPanel.transform.FindDeepChild("ConnectionsDropdown").GetComponent<DropdownStoreTransferProtocolExtension>();
         connectionsDropdown.onValueChanged.AddListener(onValueChangedInConnectionsDropdown);
 
 

@@ -20,22 +20,96 @@ public class Presenter
         }
     }
 
-    public void addConnection(string receiveIP, string receivePort, string destinationIP, string destinationPort) {
+    public string addConnection(string oS, NetworkModel.Protocol protocol, TransferProtocol.ConnectionType conType,string receiveIP, string receivePort, string destinationIP, string destinationPort)
+    {
         //TODO: checking value, converting, exectuing addObserver()
         int receivePortInt, destinationPortInt;
-        bool allChecksOk = true;
+        bool receivePortCheckOK = true;
+        bool sendPortCheckOK = true;
 
-        //TODO: check with ternary operator because if first is false and second true allChecksOk will be true
-        allChecksOk = int.TryParse(receivePort, out receivePortInt);
-        allChecksOk = int.TryParse(destinationPort, out destinationPortInt);
+        receivePortCheckOK = int.TryParse(receivePort, out receivePortInt);
+        sendPortCheckOK = int.TryParse(destinationPort, out destinationPortInt);
 
-        if (allChecksOk)
+        //All ok?
+        if (receivePortCheckOK == true && sendPortCheckOK == true)
         {
             //TODO: add radio buttons with connection type
-            NetworkModel.Instance.addObserver("Win", NetworkModel.Protocol.UDP, TransferProtocol.ConnectionType.ReceiveAndSend, receiveIP, receivePortInt, destinationIP, destinationPortInt);
+            NetworkModel.Instance.addObserver(oS, protocol, conType, receiveIP, receivePortInt, destinationIP, destinationPortInt);
+            return "Added";
+            //Else - if error is somewhere
+        }
+        else
+        {
+            if (receivePortCheckOK == false && sendPortCheckOK == false) {
+                return "Receive port and send port is wrong";
+            }
+            if (receivePortCheckOK == false)
+            {
+                return "Receive port is wrong";
+            }
+            if (sendPortCheckOK == false)
+            {
+                return "Send port is wrong";
+            }
+        }
+        return "";
+    }
+
+    /*//TODO: How maybe error and info codes should be handled
+     * public string addConnection(string receiveIP, string receivePort, string destinationIP, string destinationPort) {
+        List<Tuple<string, byte>> errorCodes = null;
+
+        //TODO: checking value, converting, exectuing addObserver()
+        int receivePortInt, destinationPortInt;
+        bool receivePortCheckOK = true;
+        bool sendPortCheckOK = true;
+        
+        receivePortCheckOK = int.TryParse(receivePort, out receivePortInt);
+        sendPortCheckOK = int.TryParse(destinationPort, out destinationPortInt);
+
+        //All ok?
+        if (receivePortCheck == true && sendPortCheckOK == true)
+        {
+            //TODO: add radio buttons with connection type
+            errorCodes.Add(NetworkModel.Instance.addObserver("Win", NetworkModel.Protocol.UDP, TransferProtocol.ConnectionType.ReceiveAndSend, receiveIP, receivePortInt, destinationIP, destinationPortInt));
+            return addConnectionGenerateResultFromErrorCodes(errorCodes);
+            //Else if error is somewhere
+        } else
+        {
+
+            if (receivePortCheckOK == false) {
+                errorCodes.Add(new Tuple<"addConnection", 2);
+            }
+            if (sendPortCheckOK == false)
+            {
+                errorCodes.Add(new Tuple<"addConnection", 1);
+            }
+            return addConnectionGenerateResultFromErrorCodes(errorCodes);
         }
     }
 
+        //TODO: Later need to think about handling logging to the user
+    public string addConnectionGenerateResultFromErrorCodes(List<Tuple<string, byte>> errorCodes) {
+        string result = "";
+        foreach (Tuple<string, byte> errorData in errorCodes) {
+            switch (errorData.Item1) {
+                case "addConnection": { 
+                        switch (errorData) {
+                            case 0: {
+                                        break;
+                            }
+                            default: {
+                                    result += "error";
+                                break;
+                            }
+                        }
+                        break;
+                    }
+            }
+        }
+        return result;
+    }
+    */
     public void send(byte[] data) {
         NetworkModel.Instance.Send(data);
     }
