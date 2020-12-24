@@ -8,6 +8,7 @@ using UnityEngine;
 public class ViewTabNew : MonoBehaviour
 {
     private static ViewTabNew instance = null;
+    private bool receiveSth = false;
 
     private GameObject tabNewPanel = null;
     private UnityEngine.UI.Button buttonSend;
@@ -21,27 +22,44 @@ public class ViewTabNew : MonoBehaviour
     private UnityEngine.UI.InputField destinationPort;
     private UnityEngine.UI.Text scrollAreaText;
     private UnityEngine.UI.InputField dataField;
-    private List<Tuple<string, DateTime>> InfoScrollAreaTextQueue = new List<Tuple<string, DateTime>>();
+    private List<Tuple<string, DateTime?>> InfoScrollAreaTextQueue = new List<Tuple<string, DateTime?>>();
     private float InfoScrollAreaMessageEvery = 0.5f; //Message every x seconds
     private int InfoScrollAreaTextLines = 5; //Max lines of messages
+    private List<float> checkMessagesEvery = new List<float>();
+    private float defaultCheckMessageEvery = 0.2f;
+    int iterator = 0;
 
     //HERETODO: repair add connection button
 
     // Start is called before the first frame update
     void Start()
     {
-        if (instance == null) {
+        if (instance == null)
+        {
             instance = this;
         }
         linkUI();
+        //Start info scroll area text coroutine
+        StartCoroutine("WaitAndPrintToInfoScrollArea");
+
         addTestConnections();
     }
 
-    private void addTestConnections() {
-        Presenter.Instance.addConnection("Win", NetworkModel.Protocol.UDP, TransferProtocol.ConnectionType.ReceiveAndSend, "192.168.0.3", "65535", "192.168.0.3", "65535");
+    private void addTestConnections()
+    {
+        string result = Presenter.Instance.addConnection("Win", NetworkModel.Protocol.UDP, TransferProtocol.ConnectionType.ReceiveAndSend, "192.168.0.3", "65535", "192.168.0.3", "65535");
+        //Adding message to the info panel
+        addTextToInfoScrollArea("Adding connection: 192.168.0.3:65535 - " + result);
+        //Receive data after some time
+        if (result.Contains("Added"))
+        {
+            checkMessagesEvery.Add(defaultCheckMessageEvery);
+            StartCoroutine(WaitForReceivingData(checkMessagesEvery.Count-1));
+        }
     }
 
-    private void linkUI() {
+    private void linkUI()
+    {
         //Main Panel for script
         tabNewPanel = AppModel.Instance.tabNewPanel;
 
@@ -68,27 +86,43 @@ public class ViewTabNew : MonoBehaviour
         //TODO:move refreshReceiveIPDropdown to some more appropiate place
         refreshReceiveIPDropdown();
 
-        //Start info scroll area text coroutine
-        StartCoroutine("WaitAndPrintToInfoScrollArea");
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-    }
 
-    public void addTextToInfoScrollArea(string text) {
-        InfoScrollAreaTextQueue.Add(new Tuple<string, DateTime>(text, DateTime.Now));
     }
-
-    private IEnumerator WaitForReceivingData(TransferProtocol tp) {
-        bool receiveData = true;
-        while (receiveData) {
-            //https://gamedevbeginner.com/coroutines-in-unity-when-and-how-to-use-them/
-            yeild return new WaitUntil(ReceivedData);
+    
+    public void addTextToInfoScrollArea(string text)
+    {
+        bool withDate = false;
+        if (withDate == true)
+        {
+            InfoScrollAreaTextQueue.Add(new Tuple<string, DateTime?>(text, DateTime.Now));
+        }
+        else {
+            InfoScrollAreaTextQueue.Add(new Tuple<string, DateTime?>(text, null));
         }
     }
+
+    private IEnumerator WaitForReceivingData(int checkIndex)
+    {
+        bool receiveData = true;
+        string s = "";
+        while (receiveData)
+        {
+            s = receiveDataAsString();
+
+            if (!s.Equals(""))
+            {
+                addTextToInfoScrollArea("Received:" + s);
+            }
+            yield return new WaitForSeconds(checkMessagesEvery[checkIndex]);
+        }
+    }
+
 
     // every 500 ms print
     private IEnumerator WaitAndPrintToInfoScrollArea()
@@ -96,24 +130,27 @@ public class ViewTabNew : MonoBehaviour
         while (true)
         {
             //If there are messages in the queue
-            if (InfoScrollAreaTextQueue.Count > 0){
+            if (InfoScrollAreaTextQueue.Count > 0)
+            {
                 //Append text
-                scrollAreaText.text += "\n" + InfoScrollAreaTextQueue[InfoScrollAreaTextQueue.Count - 1].Item2 + " " + 
+                scrollAreaText.text += "\n" + InfoScrollAreaTextQueue[InfoScrollAreaTextQueue.Count - 1].Item2 + " " +
                     InfoScrollAreaTextQueue[InfoScrollAreaTextQueue.Count - 1].Item1;
-                
+
                 //Delete last text in the queue
-                InfoScrollAreaTextQueue.RemoveAt(InfoScrollAreaTextQueue.Count-1);
+                InfoScrollAreaTextQueue.RemoveAt(InfoScrollAreaTextQueue.Count - 1);
 
                 //If text for user is too long then delete last line
-                if (scrollAreaText.text.Split('\n').Length > InfoScrollAreaTextLines) {
-                    scrollAreaText.text = scrollAreaText.text.Substring(scrollAreaText.text.IndexOf('\n')+1);
+                if (scrollAreaText.text.Split('\n').Length > InfoScrollAreaTextLines)
+                {
+                    scrollAreaText.text = scrollAreaText.text.Substring(scrollAreaText.text.IndexOf('\n') + 1);
                 }
             }
             yield return new WaitForSeconds(InfoScrollAreaMessageEvery);
         }
     }
 
-    private void refreshReceiveIPDropdown() {
+    private void refreshReceiveIPDropdown()
+    {
         receiveIP.options.Clear();
         foreach (string s in Presenter.Instance.getOriginIPsString())
         {
@@ -122,9 +159,12 @@ public class ViewTabNew : MonoBehaviour
         receiveIP.RefreshShownValue();
     }
 
-    public static ViewTabNew Instance {
-        get {
-            if (instance == null) {
+    public static ViewTabNew Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
                 GameObject go = new GameObject();
                 instance = go.AddComponent<ViewTabNew>();
             }
@@ -132,10 +172,16 @@ public class ViewTabNew : MonoBehaviour
         }
     }
 
-    private void onClickAddConnection() {
+    private void onClickAddConnection()
+    {
         string result = Presenter.Instance.addConnection("Win", NetworkModel.Protocol.UDP, TransferProtocol.ConnectionType.ReceiveAndSend, getSelectedOriginIPString(), receivePort.text, destinationIP.text, destinationPort.text);
+        if (result.Contains("Added")) {
+            checkMessagesEvery.Add(defaultCheckMessageEvery);
+        }
         //Adding message to the info panel
-        addTextToInfoScrollArea("Adding connection: " + getSelectedOriginIPString() + " " + receivePort.text + " ..." + result);
+        addTextToInfoScrollArea("Adding connection: " + getSelectedOriginIPString() + " " + receivePort.text + "-" + result);
+        //Receive data after some time
+        StartCoroutine(WaitForReceivingData(checkMessagesEvery.Count));
     }
 
     public void onClickSend()
@@ -159,20 +205,29 @@ public class ViewTabNew : MonoBehaviour
     public void onClickReceive()
     {
         //UnityEngine.Events.UnityEvent receiveDataFromClient = new UnityEngine.Events.UnityEvent();
-        /*string s = "";
+        string s = "";
         List<byte[]> receivedData = Presenter.Instance.receive();
-        s += (receivedData == null ? "NULL" : decodeByteToString(receivedData[0]) );
+        s += (receivedData[0] == null ? "" : decodeByteToString(receivedData[0]));
 
-        addTextToInfoScrollArea("Received:" + s);
-        */
-
+        if (!s.Equals(""))
+        {
+            addTextToInfoScrollArea("Received:" + s);
+        }
     }
 
-    public string decodeByteToString(byte[] data) {
+    public string receiveDataAsString()
+    {
+        List<byte[]> receivedData = Presenter.Instance.receive();
+        return (receivedData[0] == null ? "" : decodeByteToString(receivedData[0]));
+    }
+
+    public string decodeByteToString(byte[] data)
+    {
         string s = "";
-        foreach (byte b in data) {
-            s += ((char)b);
-        }
+            foreach (byte b in data)
+            {
+                s += ((char)b);
+            }
         return s;
     }
 
@@ -194,3 +249,6 @@ public class ViewTabNew : MonoBehaviour
         return receiveIP.options[receiveIP.value].text;
     }
 }
+
+
+//https://gamedevbeginner.com/coroutines-in-unity-when-and-how-to-use-them/
