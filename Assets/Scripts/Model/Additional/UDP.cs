@@ -14,8 +14,9 @@ namespace Assets.Scripts.Model.Additional
         UdpClient udpClient, udpServer; //Server-Receive Client-Send
         System.Net.IPEndPoint epClient, epServer;
 
-        public UDP(string system, ConnectionType connectionType, string receiveIP, int receivePort, string destinationIP, int destinationPort) 
-            : base(system, connectionType, receiveIP, receivePort, destinationIP, destinationPort){
+        public UDP(string system, ConnectionType connectionType, string receiveIP, int receivePort, string destinationIP, int destinationPort)
+            : base(system, connectionType, receiveIP, receivePort, destinationIP, destinationPort)
+        {
             if (base.isReceivingActive())
             {
                 udpServer = new UdpClient(receivePort);
@@ -30,13 +31,43 @@ namespace Assets.Scripts.Model.Additional
             }
         }
 
-        public override bool send(byte[] data) {
+        public override bool send(byte[] data, TransferProtocol.DataType dataType)
+        {
+
+            byte[] dataProcessed = new byte[data.Length + 1];
+            dataProcessed = data.ToArray<byte>();
+
+            switch (dataType)
+            {
+                case DataType.LeftChannel:
+                    {
+                        dataProcessed[dataProcessed.Length] = (byte)0;
+                        break;
+                    }
+                case DataType.RightChannel:
+                    {
+                        dataProcessed[dataProcessed.Length] = (byte)1;
+                        break;
+                    }
+                case DataType.String:
+                    {
+                        dataProcessed[dataProcessed.Length] = (byte)2;
+                        break;
+                    }
+                default:
+                    {
+                        dataProcessed[dataProcessed.Length] = (byte)2;
+                        break;
+                    }
+            }
+
             if (base.isSendingActive())
             {
-                udpClient.Send(data, data.Length);
+                udpClient.Send(dataProcessed, dataProcessed.Length);
                 return true;
             }
-            else {
+            else
+            {
                 return false;
             }
         }
@@ -50,7 +81,10 @@ namespace Assets.Scripts.Model.Additional
                     return udpServer.Receive(ref epServer);
                 }
             }
-            return null;   
+            return null;
         }
+
     }
 }
+
+//https://stackoverflow.com/questions/20038943/simple-udp-example-to-send-and-receive-data-from-same-socket

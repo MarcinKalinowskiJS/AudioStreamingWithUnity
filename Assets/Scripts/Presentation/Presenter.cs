@@ -111,7 +111,7 @@ public class Presenter
     }
     */
     public void send(byte[] data) {
-        NetworkModel.Instance.Send(data);
+        NetworkModel.Instance.Send(data, TransferProtocol.DataType.String);
     }
 
     public List<byte[]> receive() {

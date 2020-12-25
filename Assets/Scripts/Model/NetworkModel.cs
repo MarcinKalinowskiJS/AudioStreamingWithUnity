@@ -55,11 +55,11 @@ public class NetworkModel
         return null;
     }
 
-    public bool Send(byte[] data) {
+    public bool Send(byte[] data, DataType dataType) {
         bool sended = false;
         foreach (TransferProtocol tp in observers) {
             if (tp.isSendingActive()) {
-                tp.send(data);
+                tp.send(data, dataType);
                 sended = true;
             }
         }

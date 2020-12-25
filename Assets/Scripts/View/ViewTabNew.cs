@@ -42,6 +42,7 @@ public class ViewTabNew : MonoBehaviour
         //Start info scroll area text coroutine
         StartCoroutine("WaitAndPrintToInfoScrollArea");
 
+
         addTestConnections();
     }
 
@@ -50,12 +51,19 @@ public class ViewTabNew : MonoBehaviour
         string result = Presenter.Instance.addConnection("Win", NetworkModel.Protocol.UDP, TransferProtocol.ConnectionType.ReceiveAndSend, "192.168.0.3", "65535", "192.168.0.3", "65535");
         //Adding message to the info panel
         addTextToInfoScrollArea("Adding connection: 192.168.0.3:65535 - " + result);
+
+        //List<byte[]> dataTest = NetworkModel.Instance.Receive();
+
+        Debug.Log(AudioModel.Instance.GetType().ToString());
+
+        /*
         //Receive data after some time
         if (result.Contains("Added"))
         {
             checkMessagesEvery.Add(defaultCheckMessageEvery);
             StartCoroutine(WaitForReceivingData(checkMessagesEvery.Count-1));
         }
+        */
     }
 
     private void linkUI()
@@ -92,7 +100,6 @@ public class ViewTabNew : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
     }
     
     public void addTextToInfoScrollArea(string text)
@@ -205,14 +212,16 @@ public class ViewTabNew : MonoBehaviour
     public void onClickReceive()
     {
         //UnityEngine.Events.UnityEvent receiveDataFromClient = new UnityEngine.Events.UnityEvent();
-        string s = "";
+        /*string s = "";
         List<byte[]> receivedData = Presenter.Instance.receive();
         s += (receivedData[0] == null ? "" : decodeByteToString(receivedData[0]));
 
         if (!s.Equals(""))
         {
             addTextToInfoScrollArea("Received:" + s);
-        }
+        }*/
+
+        addTextToInfoScrollArea(AudioModel.Instance.getAverageSampleRateForSecond().ToString());
     }
 
     public string receiveDataAsString()
@@ -247,6 +256,11 @@ public class ViewTabNew : MonoBehaviour
     public string getSelectedOriginIPString()
     {
         return receiveIP.options[receiveIP.value].text;
+    }
+
+    private void OnApplicationQuit()
+    {
+        AudioModel.Instance.Cleanup();
     }
 }
 

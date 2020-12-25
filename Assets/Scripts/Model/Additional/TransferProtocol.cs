@@ -9,6 +9,7 @@ namespace Assets.Scripts.Model.Additional
     public abstract class TransferProtocol
     {
         public enum ConnectionType { Receive, Send, ReceiveAndSend };
+        public enum DataType { LeftChannel, RightChannel, String};
         public string system;
         public ConnectionType connectionType;
         public string receiveIP, destinationIP;
@@ -23,7 +24,7 @@ namespace Assets.Scripts.Model.Additional
             this.destinationPort = destinationPort;
         }
 
-        public abstract bool send(byte[] data);
+        public abstract bool send(byte[] data, DataType dataType);
         public abstract byte[] receive();
 
         public bool isSendingActive() {
@@ -52,6 +53,17 @@ namespace Assets.Scripts.Model.Additional
             else
             {
                 return false;
+            }
+        }
+
+        public DataType getDataType(byte[] data)
+        {
+            switch (data[data.Length])
+            {
+                case 0: return DataType.LeftChannel;
+                case 1: return DataType.RightChannel;
+                case 2: return DataType.String;
+                default: return DataType.String;
             }
         }
     }

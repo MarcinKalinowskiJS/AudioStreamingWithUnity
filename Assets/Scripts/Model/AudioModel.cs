@@ -9,31 +9,32 @@ using CSCore.Codecs.WAV;
 using System;
 using CSCore.CoreAudioAPI;
 
-public class AudioModel : MonoBehaviour
+public class AudioModel
 {
     private static AudioModel instance = null;
 
     WasapiCapture capture;
     IWaveSource finalSource;
     List<ISoundOut> _soundOutList;
-    public int bufferLength=2048;
+    public int bufferLength = 2048;
     float[] buffer;
     int sampleNumberForBuffer;
+    int sampleCount;
+    System.Diagnostics.Stopwatch clock;
+
     // Start is called before the first frame update
-    void Start()
+    public AudioModel()
     {
         //o.updateObserverErgoSendData(new byte[] { 1, 3, 5, 7 });
-        
-        
-        /*
         buffer = new float[bufferLength];
-        observers = new List<ObserverSender>();
+        //observers = new List<ObserverSender>();
         Debug.Log("WasapiCapture.IsSupportedOnCurrentPlatform: " + WasapiCapture.IsSupportedOnCurrentPlatform);
         capture = new WasapiLoopbackCapture();
         capture.Initialize();
         IWaveSource source = new SoundInSource(capture);
         var notificationSource = new SingleBlockNotificationStream(source.ToSampleSource());
         notificationSource.SingleBlockRead += NotificationSource_SingleBlockRead;
+        clock = new System.Diagnostics.Stopwatch();
 
         finalSource = notificationSource.ToWaveSource();
 
@@ -48,14 +49,15 @@ public class AudioModel : MonoBehaviour
         }
         foreach (var so in _soundOutList) {
             so.Initialize(finalSource);
-            so.Volume = 0.8f;
+            so.Volume = 2.0f;
             so.Play();
         }
         Debug.Log("Devices Count: " + mmdeviceCollection.GetCount());
-        */
+
+
     }
 
-    /*public static AudioModel Instance
+    public static AudioModel Instance
     {
         get
         {
@@ -65,7 +67,8 @@ public class AudioModel : MonoBehaviour
             }
             return instance;
         }
-    }*/
+
+    }
 
     private void Capture_DataAvailable(object sender, DataAvailableEventArgs e) {
         finalSource.Read(e.Data, e.Offset, e.ByteCount);
@@ -74,20 +77,45 @@ public class AudioModel : MonoBehaviour
     private void NotificationSource_SingleBlockRead(object sender, SingleBlockReadEventArgs e) {
         //Probably actions for readed data from source
         //Debug.Log("Left: " + e.Left + " \t\tRight: " + e.Right);
+        Debug.Log(clock.IsRunning);
+        if (!clock.IsRunning)
+        {
+            clock.Start();
+            sampleCount = 0;
+        }
         buffer[sampleNumberForBuffer] = e.Left;
-        buffer[sampleNumberForBuffer+1] = e.Right;
+        buffer[sampleNumberForBuffer + 1] = e.Right;
         sampleNumberForBuffer = (sampleNumberForBuffer + 2) % bufferLength;
-        notify();
+        sampleCount++;
+        notifyObservers();
     }
 
-    private void notify() {
+    public float getAverageSampleRateForSecond() {
+        float sampleRate = (float)sampleCount / (clock.ElapsedMilliseconds) * 1000;
+        clock.Stop();
+        return sampleRate;
+    }
 
+    private void notifyObservers() {
+
+    }
+
+    public void Cleanup() {
+        foreach (var so in _soundOutList)
+        {
+            so.Stop();
+            so.Dispose();
+        }
+        capture.Stop();
+        capture.Dispose();
     }
 
     void OnApplicationQuit()
     {
-        //TODO: Delete 1==0
-        if (enabled && 1==0)
+        //Before there was a some kind of variable associated with MonoBehaviour - enabled
+        bool enabled = true;
+
+        if (enabled)
         {
             foreach (var so in _soundOutList) {
                 so.Stop();
