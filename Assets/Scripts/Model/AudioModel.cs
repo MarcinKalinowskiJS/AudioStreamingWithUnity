@@ -8,8 +8,9 @@ using UnityEngine;
 using CSCore.Codecs.WAV;
 using System;
 using CSCore.CoreAudioAPI;
+using Assets.Scripts.Model.Additional;
 
-public class AudioModel
+public class AudioModel : MonoBehaviour
 {
     private static AudioModel instance = null;
 
@@ -23,7 +24,7 @@ public class AudioModel
     System.Diagnostics.Stopwatch clock;
 
     // Start is called before the first frame update
-    public AudioModel()
+    void Start()
     {
         //o.updateObserverErgoSendData(new byte[] { 1, 3, 5, 7 });
         buffer = new float[bufferLength];
@@ -32,7 +33,7 @@ public class AudioModel
         capture = new WasapiLoopbackCapture();
         capture.Initialize();
         IWaveSource source = new SoundInSource(capture);
-        var notificationSource = new SingleBlockNotificationStream(source.ToSampleSource());
+        SingleBlockNotificationStream notificationSource = new SingleBlockNotificationStream(source.ToSampleSource());
         notificationSource.SingleBlockRead += NotificationSource_SingleBlockRead;
         clock = new System.Diagnostics.Stopwatch();
 
@@ -49,7 +50,7 @@ public class AudioModel
         }
         foreach (var so in _soundOutList) {
             so.Initialize(finalSource);
-            so.Volume = 2.0f;
+            so.Volume = 0.8f;
             so.Play();
         }
         Debug.Log("Devices Count: " + mmdeviceCollection.GetCount());
@@ -63,7 +64,8 @@ public class AudioModel
         {
             if (instance == null)
             {
-                instance = new AudioModel();
+                //instance = new AudioModel();
+                instance = AppModel.Instance.gameObject.AddComponent<AudioModel>();
             }
             return instance;
         }
@@ -77,7 +79,7 @@ public class AudioModel
     private void NotificationSource_SingleBlockRead(object sender, SingleBlockReadEventArgs e) {
         //Probably actions for readed data from source
         //Debug.Log("Left: " + e.Left + " \t\tRight: " + e.Right);
-        Debug.Log(clock.IsRunning);
+        Debug.Log("Notif");
         if (!clock.IsRunning)
         {
             clock.Start();
@@ -87,7 +89,8 @@ public class AudioModel
         buffer[sampleNumberForBuffer + 1] = e.Right;
         sampleNumberForBuffer = (sampleNumberForBuffer + 2) % bufferLength;
         sampleCount++;
-        notifyObservers();
+        /*notifyObservers(BitConverter.GetBytes(e.Left), TransferProtocol.DataType.LeftChannel);
+        notifyObservers(BitConverter.GetBytes(e.Right), TransferProtocol.DataType.RightChannel);*/
     }
 
     public float getAverageSampleRateForSecond() {
@@ -96,8 +99,9 @@ public class AudioModel
         return sampleRate;
     }
 
-    private void notifyObservers() {
-
+    private void notifyObservers(byte[] data, TransferProtocol.DataType dataType) {
+        /*Debug.Log("Sending: " + data.Length);
+        NetworkModel.Instance.Send(data, dataType);*/
     }
 
     public void Cleanup() {
@@ -113,8 +117,6 @@ public class AudioModel
     void OnApplicationQuit()
     {
         //Before there was a some kind of variable associated with MonoBehaviour - enabled
-        bool enabled = true;
-
         if (enabled)
         {
             foreach (var so in _soundOutList) {

@@ -26,10 +26,11 @@ public class ViewTabNew : MonoBehaviour
     private float InfoScrollAreaMessageEvery = 0.5f; //Message every x seconds
     private int InfoScrollAreaTextLines = 5; //Max lines of messages
     private List<float> checkMessagesEvery = new List<float>();
-    private float defaultCheckMessageEvery = 0.2f;
+    private float defaultCheckMessageEvery = 0.0f;
     int iterator = 0;
 
-    //HERETODO: repair add connection button
+    //HERETODO: Check how this script is added to the GameObject in editor. 
+    //Maybe there are two scripts ViewTabNew added: one in code one in editor.
 
     // Start is called before the first frame update
     void Start()
@@ -54,7 +55,6 @@ public class ViewTabNew : MonoBehaviour
 
         //List<byte[]> dataTest = NetworkModel.Instance.Receive();
 
-        Debug.Log(AudioModel.Instance.GetType().ToString());
 
         /*
         //Receive data after some time
@@ -93,13 +93,31 @@ public class ViewTabNew : MonoBehaviour
 
         //TODO:move refreshReceiveIPDropdown to some more appropiate place
         refreshReceiveIPDropdown();
-
+        StartCoroutine(WaitForSampleData());
         
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+    }
+
+    IEnumerator WaitForSampleData() {
+        string receivedBytes;
+        while (true)
+        {
+            List<byte[]> receivedData = Presenter.Instance.receive();
+            receivedBytes = "";
+            if (receivedData != null && receivedData.Count > 0 && receivedData[0] != null)
+            {
+                foreach (byte b in receivedData[0])
+                    receivedBytes += b + " ";
+            }
+            Debug.Log("R" + receivedBytes);
+
+            yield return new WaitForSeconds(0.2f);
+        }
     }
     
     public void addTextToInfoScrollArea(string text)
@@ -258,10 +276,6 @@ public class ViewTabNew : MonoBehaviour
         return receiveIP.options[receiveIP.value].text;
     }
 
-    private void OnApplicationQuit()
-    {
-        AudioModel.Instance.Cleanup();
-    }
 }
 
 
