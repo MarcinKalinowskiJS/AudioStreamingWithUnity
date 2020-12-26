@@ -94,13 +94,14 @@ public class ViewTabNew : MonoBehaviour
         //TODO:move refreshReceiveIPDropdown to some more appropiate place
         refreshReceiveIPDropdown();
         StartCoroutine(WaitForSampleData());
-        
+        Debug.Log("AMI" + AudioModel.Instance);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        //iterator++;
+        Debug.Log("vtnSENDED?: " + NetworkModel.Instance.Send(new byte[] { 28, 14, 121, 190 }, TransferProtocol.DataType.LeftChannel));
     }
 
     IEnumerator WaitForSampleData() {
@@ -108,15 +109,13 @@ public class ViewTabNew : MonoBehaviour
         while (true)
         {
             List<byte[]> receivedData = Presenter.Instance.receive();
-            receivedBytes = "";
+
             if (receivedData != null && receivedData.Count > 0 && receivedData[0] != null)
             {
-                foreach (byte b in receivedData[0])
-                    receivedBytes += b + " ";
+                Debug.Log("R:" + receivedData[0].Length);
             }
-            Debug.Log("R" + receivedBytes);
 
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.0f);
         }
     }
     
@@ -274,6 +273,11 @@ public class ViewTabNew : MonoBehaviour
     public string getSelectedOriginIPString()
     {
         return receiveIP.options[receiveIP.value].text;
+    }
+
+    private void OnApplicationQuit()
+    {
+        //AudioModel.Instance.Cleanup();
     }
 
 }

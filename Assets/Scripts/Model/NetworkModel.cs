@@ -57,6 +57,7 @@ public class NetworkModel
 
     public bool Send(byte[] data, DataType dataType) {
         bool sended = false;
+        Debug.Log("Observers: " + observers.Count);
         foreach (TransferProtocol tp in observers) {
             if (tp.isSendingActive()) {
                 tp.send(data, dataType);

@@ -9,7 +9,7 @@ namespace Assets.Scripts.Model.Additional
     public abstract class TransferProtocol
     {
         public enum ConnectionType { Receive, Send, ReceiveAndSend };
-        public enum DataType { LeftChannel, RightChannel, String};
+        public enum DataType { LeftChannel, RightChannel, String, LRChannelBuffer};
         public string system;
         public ConnectionType connectionType;
         public string receiveIP, destinationIP;
