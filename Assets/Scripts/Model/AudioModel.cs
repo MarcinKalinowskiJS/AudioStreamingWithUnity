@@ -10,6 +10,7 @@ using System;
 using CSCore.CoreAudioAPI;
 using Assets.Scripts.Model.Additional;
 using System.ComponentModel;
+using System.IO;
 
 public class AudioModel : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class AudioModel : MonoBehaviour
     int sampleCount;
     System.Diagnostics.Stopwatch clock;
     System.Random randomGenerator = new System.Random();
+    BinaryWriter writer = new BinaryWriter();
 
     // Start is called before the first frame update
     void Start()
@@ -40,17 +42,25 @@ public class AudioModel : MonoBehaviour
         Debug.Log("WasapiCapture.IsSupportedOnCurrentPlatform: " + WasapiCapture.IsSupportedOnCurrentPlatform);
         capture = new WasapiLoopbackCapture();
         capture.Initialize();
+        //HERE:
+        capture.DataAvailable += (s, a) => writeToStream(s, a);
+        capture.Start();
 
-        IWaveSource source = new SoundInSource(capture);
-        SingleBlockNotificationStream notificationSource = new SingleBlockNotificationStream(source.ToSampleSource());
+        //IWaveSource source = new SoundInSource(capture);
+        //SingleBlockNotificationStream notificationSource = new SingleBlockNotificationStream(source.ToSampleSource());
+
+        
+        //IWaveSource wave8 = notificationSource.ToWaveSource(8);
+        //Debug.Log(wave8.WaveFormat.BytesPerSecond);
+        //wave8.WriteToWaveStream
+        
         //notificationSource.SingleBlockRead += NotificationSource_SingleBlockRead;
         clock = new System.Diagnostics.Stopwatch();
 
-        finalSource = notificationSource.ToWaveSource();
+        //finalSource = notificationSource.ToWaveSource();
         //finalSourceReceived = notificationSourceReceived.ToWaveSource()
 
         //capture.DataAvailable += Capture_DataAvailable;
-        capture.Start();
 
         var mmdeviceEnumerator = new MMDeviceEnumerator();
         var mmdeviceCollection = mmdeviceEnumerator.EnumAudioEndpoints(DataFlow.Render, DeviceState.Active);
@@ -70,6 +80,15 @@ public class AudioModel : MonoBehaviour
         StartCoroutine(SendBufferCoroutine());
     }
 
+    private writeToStream(object sender, DataAvailableEventArgs a) {
+        writer.Write(a.Data, a.Offset, a.ByteCount);
+    }
+
+    private void Capture_DataAvailable1(object sender, DataAvailableEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+    //https://stackoverflow.com/questions/62204099/c-sharp-live-streaming-audio-over-socket-connection
     public static AudioModel Instance
     {
         get
