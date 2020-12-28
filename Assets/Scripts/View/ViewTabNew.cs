@@ -49,9 +49,9 @@ public class ViewTabNew : MonoBehaviour
 
     private void addTestConnections()
     {
-        string result = Presenter.Instance.addConnection("Win", NetworkModel.Protocol.UDP, TransferProtocol.ConnectionType.ReceiveAndSend, "192.168.0.3", "65535", "192.168.0.3", "65535");
+        //string result = Presenter.Instance.addConnection("Win", NetworkModel.Protocol.UDP, TransferProtocol.ConnectionType.ReceiveAndSend, "192.168.0.3", "65535", "192.168.0.3", "65535");
         //Adding message to the info panel
-        addTextToInfoScrollArea("Adding connection: 192.168.0.3:65535 - " + result);
+        //addTextToInfoScrollArea("Adding connection: 192.168.0.3:65535 - " + result);
 
         //List<byte[]> dataTest = NetworkModel.Instance.Receive();
 
@@ -93,7 +93,7 @@ public class ViewTabNew : MonoBehaviour
 
         //TODO:move refreshReceiveIPDropdown to some more appropiate place
         refreshReceiveIPDropdown();
-        StartCoroutine(WaitForSampleData());
+        //StartCoroutine(WaitForSampleData());
         Debug.Log("AMI" + AudioModel.Instance);
     }
 

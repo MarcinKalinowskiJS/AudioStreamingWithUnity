@@ -11,6 +11,8 @@ using CSCore.CoreAudioAPI;
 using Assets.Scripts.Model.Additional;
 using System.ComponentModel;
 using System.IO;
+using System.Net.Sockets;
+using System.Net;
 
 public class AudioModel : MonoBehaviour
 {
@@ -30,11 +32,57 @@ public class AudioModel : MonoBehaviour
     int sampleCount;
     System.Diagnostics.Stopwatch clock;
     System.Random randomGenerator = new System.Random();
-    BinaryWriter writer = new BinaryWriter();
+
+    TcpClient tcpWrite;
+    TcpListener tcpServerRead;
+    TcpClient tcpRead;
+    BinaryWriter writer;
+    BinaryReader reader;
+    
+    
 
     // Start is called before the first frame update
     void Start()
     {
+        tcpServerRead = new TcpListener(IPAddress.Parse("192.168.0.3"), 65501);
+        tcpServerRead.Start();
+
+        tcpWrite = new TcpClient();
+        tcpWrite.Client = new Socket(AddressFamily.InterNetwork,
+            SocketType.Stream,
+            ProtocolType.Tcp);
+        tcpWrite.Client.Connect(IPAddress.Parse("192.168.0.3"), 65501);
+
+        tcpRead = tcpServerRead.AcceptTcpClient();
+
+
+        tcpWrite.GetStream().Write(new byte[] { 1, 2, 9 }, 0, 3);
+
+        byte[] rec = new byte[3];
+        tcpRead.GetStream().Read(rec, 0, 3);
+
+        string recString = "";
+        foreach (byte b in rec) {
+            recString += b + " ";
+        }
+
+        Debug.Log("Rec:" + recString);
+
+        tcpRead.Close();
+        tcpServerRead.Stop();
+        tcpWrite.Close();
+
+        /*
+        s = new Socket(AddressFamily.InterNetwork,
+            SocketType.Stream,
+            ProtocolType.Tcp);
+        s.Connect(IPAddress.Parse("192.168.0.3"), 65535);
+        tcpRead = (TcpClient)s;
+        */
+
+        writer = new BinaryWriter(tcpWrite.GetStream());
+        reader = new BinaryReader(tcpRead.GetStream());
+
 
         //o.updateObserverErgoSendData(new byte[] { 1, 3, 5, 7 });
         buffer = new float[bufferLength];
@@ -61,7 +109,7 @@ public class AudioModel : MonoBehaviour
         //finalSourceReceived = notificationSourceReceived.ToWaveSource()
 
         //capture.DataAvailable += Capture_DataAvailable;
-
+        /*
         var mmdeviceEnumerator = new MMDeviceEnumerator();
         var mmdeviceCollection = mmdeviceEnumerator.EnumAudioEndpoints(DataFlow.Render, DeviceState.Active);
         _soundOutList = new List<ISoundOut>();
@@ -76,11 +124,24 @@ public class AudioModel : MonoBehaviour
             so.Play();
         }
         Debug.Log("Devices Count: " + mmdeviceCollection.GetCount());
-
+        
         StartCoroutine(SendBufferCoroutine());
+        */
+        
+        WriteableBufferingSource src = new WriteableBufferingSource(new CSCore.WaveFormat(48000, 32, 2)) { FillWithZeros = true };
+
+        WasapiOut soundOut = new WasapiOut();
+        soundOut.Initialize(src);
+        soundOut.Play();
+        int size = 3840;
+
+        while (true) {
+            byte[] bytes = reader.ReadBytes(size);
+            src.Write(bytes, 0, size);
+        }
     }
 
-    private writeToStream(object sender, DataAvailableEventArgs a) {
+    private void writeToStream(object sender, DataAvailableEventArgs a) {
         writer.Write(a.Data, a.Offset, a.ByteCount);
     }
 
