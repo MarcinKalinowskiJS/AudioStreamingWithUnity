@@ -33,37 +33,10 @@ namespace Assets.Scripts.Model.Additional
 
         public override bool send(byte[] data, TransferProtocol.DataType dataType)
         {
-            byte[] dataProcessed = new byte[data.Length + 1];
-            System.Buffer.BlockCopy(data, 0, dataProcessed, 0, data.Length);
-            Debug.Log("DL:" + data.Length+ " new:" + dataProcessed.Length);
-
-            switch (dataType)
-            {
-                case DataType.LeftChannel:
-                    {
-                        dataProcessed[data.Length] = (byte)0;
-                        break;
-                    }
-                case DataType.RightChannel:
-                    {
-                        dataProcessed[data.Length] = (byte)1;
-                        break;
-                    }
-                case DataType.String:
-                    {
-                        dataProcessed[data.Length] = (byte)2;
-                        break;
-                    }
-                default:
-                    {
-                        dataProcessed[data.Length] = (byte)2;
-                        break;
-                    }
-            }
-
             if (base.isSendingActive())
             {
-                udpClient.Send(dataProcessed, dataProcessed.Length);
+                byte[] dataCombined = base.getDataCombined(data, dataType);
+                udpClient.Send(dataCombined, dataCombined.Length);
                 return true;
             }
             else

@@ -66,5 +66,12 @@ namespace Assets.Scripts.Model.Additional
                 default: return DataType.String;
             }
         }
+
+        public byte[] getDataCombined(byte[] data, DataType dataType) {
+            byte[] dataProcessed = new byte[data.Length + 1];
+            System.Buffer.BlockCopy(data, 0, dataProcessed, 0, data.Length);
+            dataProcessed[dataProcessed.Length] = (byte)dataType;
+            return dataProcessed;
+        }
     }
 }
