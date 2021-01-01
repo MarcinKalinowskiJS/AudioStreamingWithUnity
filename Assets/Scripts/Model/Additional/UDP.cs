@@ -45,15 +45,15 @@ namespace Assets.Scripts.Model.Additional
             }
         }
 
-        public override byte[] receive()
-        {
+        public override Tuple<byte[], int, DataType> receive()
+        {/*
             if (base.isReceivingActive())
             {
                 if (udpServer.Available > 0)
                 {
                     return udpServer.Receive(ref epServer);
                 }
-            }
+            }*/
             return null;
         }
 

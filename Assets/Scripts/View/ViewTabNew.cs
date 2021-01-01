@@ -28,6 +28,7 @@ public class ViewTabNew : MonoBehaviour
     private List<float> checkMessagesEvery = new List<float>();
     private float defaultCheckMessageEvery = 0.0f;
     int iterator = 0;
+    TCPStream tcps;
 
     //HERETODO: Check how this script is added to the GameObject in editor. 
     //Maybe there are two scripts ViewTabNew added: one in code one in editor.
@@ -95,13 +96,24 @@ public class ViewTabNew : MonoBehaviour
         refreshReceiveIPDropdown();
         //StartCoroutine(WaitForSampleData());
         Debug.Log("AMI" + AudioModel.Instance);
+        tcps = new TCPStream("Win", TransferProtocol.ConnectionType.ReceiveAndSend, "192.168.0.3", 65535, "192.168.0.3", 65535);
+        tcps.send(TransferProtocol.codeStringToBytes("Testing"), TransferProtocol.DataType.String);
+
+        Tuple<byte[], int, TransferProtocol.DataType> dataRec = tcps.receive();
+
+        byte[] dataProc = new byte[dataRec.Item2];
+        System.Buffer.BlockCopy(dataRec.Item1, 0, dataProc, 0, dataRec.Item2);
+
+        Debug.Log(TransferProtocol.decodeBytesToString(dataProc));
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        Debug.Log("Conns" + tcps.getConnectionsNumber());
         //iterator++;
-        Debug.Log("vtnSENDED?: " + NetworkModel.Instance.Send(new byte[] { 28, 14, 121, 190 }, TransferProtocol.DataType.LeftChannel));
+        //Debug.Log("vtnSENDED?: " + NetworkModel.Instance.Send(new byte[] { 28, 14, 121, 190 }, TransferProtocol.DataType.LeftChannel));
     }
 
     IEnumerator WaitForSampleData() {
@@ -212,26 +224,18 @@ public class ViewTabNew : MonoBehaviour
     {
         //NetworkModel.Instance.sendChatText("Test!");
         string message = dataField.text;
-        Presenter.Instance.send(codeStringToByte(message));
+        Presenter.Instance.send(TransferProtocol.codeStringToBytes(message));
         addTextToInfoScrollArea("Sent:" + message);
     }
 
-    public byte[] codeStringToByte(string message)
-    {
-        List<byte> byteMessage = new List<byte>();
-        foreach (char c in message)
-        {
-            byteMessage.Add((byte)c);
-        }
-        return byteMessage.ToArray();
-    }
+    
 
     public void onClickReceive()
     {
         //UnityEngine.Events.UnityEvent receiveDataFromClient = new UnityEngine.Events.UnityEvent();
         /*string s = "";
         List<byte[]> receivedData = Presenter.Instance.receive();
-        s += (receivedData[0] == null ? "" : decodeByteToString(receivedData[0]));
+        s += (receivedData[0] == null ? "" : decodeBytesToString(receivedData[0]));
 
         if (!s.Equals(""))
         {
@@ -244,18 +248,10 @@ public class ViewTabNew : MonoBehaviour
     public string receiveDataAsString()
     {
         List<byte[]> receivedData = Presenter.Instance.receive();
-        return (receivedData[0] == null ? "" : decodeByteToString(receivedData[0]));
+        return (receivedData[0] == null ? "" : TransferProtocol.decodeBytesToString(receivedData[0]));
     }
 
-    public string decodeByteToString(byte[] data)
-    {
-        string s = "";
-            foreach (byte b in data)
-            {
-                s += ((char)b);
-            }
-        return s;
-    }
+    
 
     public string getAll()
     {

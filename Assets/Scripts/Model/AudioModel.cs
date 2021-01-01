@@ -135,27 +135,33 @@ public class AudioModel : MonoBehaviour
 
     public void Cleanup()
     {
-        foreach (var so in _soundOutList)
-        {
-            so.Stop();
-            so.Dispose();
-        }
-        capture.Stop();
-        capture.Dispose();
-    }
-
-    void OnApplicationQuit()
-    {
-        //Before there was a some kind of variable associated with MonoBehaviour - enabled
-        if (enabled)
+        if (_soundOutList != null)
         {
             foreach (var so in _soundOutList)
             {
                 so.Stop();
                 so.Dispose();
             }
+        }
+        if (capture != null)
+        {
             capture.Stop();
             capture.Dispose();
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        if (enabled)
+        {
+            if (_soundOutList != null) {
+                foreach (var so in _soundOutList)
+                {
+                    so.Stop();
+                    so.Dispose();
+                }
+            }
+            
         }
     }
 

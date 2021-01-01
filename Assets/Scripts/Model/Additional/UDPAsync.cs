@@ -38,10 +38,12 @@ namespace Assets.Scripts.Model.Additional
             return false;
         }
 
-        public override byte[] receive() {
+        public override Tuple<byte[], int, DataType> receive() {
             if (base.isReceivingActive())
             {
-                return receiveUDPAsync().Result;
+                return null;
+
+                //return receiveUDPAsync().Result;
             }
             return null;
         }

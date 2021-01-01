@@ -42,16 +42,16 @@ public class NetworkModel
     }
 
     public List<byte[]> Receive()
-    {
+    {/*
         List<byte[]> receivedData = new List<byte[]>();
         foreach (TransferProtocol tp in observers)
         {
-            receivedData.Add(tp.receive());
+            receivedData.Add(tp.receive().Item1);
         }
         if (receivedData.Count > 0)
         {
             return receivedData;
-        }
+        }*/
         return null;
     }
 
