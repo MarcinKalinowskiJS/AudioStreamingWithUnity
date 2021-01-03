@@ -79,6 +79,7 @@ namespace Assets.Scripts.Model.Additional
 
             //Add data type byte - first 1 byte
             dataProcessed[0] = (byte)dataType;
+            Debug.Log("dataCombined:" + data.Length);
 
             //Copy data length - 4 bytes
             byte[] length = BitConverter.GetBytes(data.Length);

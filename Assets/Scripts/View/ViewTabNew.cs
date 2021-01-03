@@ -28,7 +28,7 @@ public class ViewTabNew : MonoBehaviour
     private List<float> checkMessagesEvery = new List<float>();
     private float defaultCheckMessageEvery = 0.0f;
     int iterator = 0;
-    TCPStream tcps;
+
 
     //HERETODO: Check how this script is added to the GameObject in editor. 
     //Maybe there are two scripts ViewTabNew added: one in code one in editor.
@@ -42,7 +42,7 @@ public class ViewTabNew : MonoBehaviour
         }
         linkUI();
         //Start info scroll area text coroutine
-        StartCoroutine("WaitAndPrintToInfoScrollArea");
+        StartCoroutine(WaitAndPrintToInfoScrollArea());
 
 
         addTestConnections();
@@ -57,6 +57,7 @@ public class ViewTabNew : MonoBehaviour
         //List<byte[]> dataTest = NetworkModel.Instance.Receive();
 
 
+        
         /*
         //Receive data after some time
         if (result.Contains("Added"))
@@ -96,22 +97,11 @@ public class ViewTabNew : MonoBehaviour
         refreshReceiveIPDropdown();
         //StartCoroutine(WaitForSampleData());
         Debug.Log("AMI" + AudioModel.Instance);
-        tcps = new TCPStream("Win", TransferProtocol.ConnectionType.ReceiveAndSend, "192.168.0.3", 65535, "192.168.0.3", 65535);
-        tcps.send(TransferProtocol.codeStringToBytes("Testing"), TransferProtocol.DataType.String);
-
-        Tuple<byte[], int, TransferProtocol.DataType> dataRec = tcps.receive();
-
-        byte[] dataProc = new byte[dataRec.Item2];
-        System.Buffer.BlockCopy(dataRec.Item1, 0, dataProc, 0, dataRec.Item2);
-
-        Debug.Log(TransferProtocol.decodeBytesToString(dataProc));
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        Debug.Log("Conns" + tcps.getConnectionsNumber());
         //iterator++;
         //Debug.Log("vtnSENDED?: " + NetworkModel.Instance.Send(new byte[] { 28, 14, 121, 190 }, TransferProtocol.DataType.LeftChannel));
     }

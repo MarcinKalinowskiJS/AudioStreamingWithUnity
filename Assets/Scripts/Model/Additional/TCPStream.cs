@@ -20,19 +20,24 @@ namespace Assets.Scripts.Model.Additional
         BinaryReader reader;
         BackgroundWorker waitForConnectionsWorker;
         int waitForConnectionsWorkerConnectionsNumber = 0;
-        byte[] buffer = new byte[2048];
+        int bufferLength = 65535;
+        byte[] buffer;
 
         public TCPStream(string system, ConnectionType connectionType, string receiveIP, int receivePort, string destinationIP,
             int destinationPort) : base(system, connectionType, receiveIP, receivePort, destinationIP, destinationPort)
         {
+            buffer = new byte[bufferLength];
+
             if (base.isReceivingActive()) {
                 tcpServerRead = new TcpListener(IPAddress.Parse(destinationIP), destinationPort);
                 tcpServerRead.Start();
                 waitForConnectionsWorker = new BackgroundWorker();
                 waitForConnectionsWorker.DoWork += waitForConnection_DoWork;
+                waitForConnectionsWorker.WorkerSupportsCancellation = true;
                 waitForConnectionsWorker.ProgressChanged += waitForConnection_ProgressChanged;
                 waitForConnectionsWorker.WorkerReportsProgress = true;
-                waitForConnectionsWorker.RunWorkerAsync(argument: true);
+                //Argument = Wait for many connections
+                waitForConnectionsWorker.RunWorkerAsync(argument: false);
             }
             //First start listening
             if (base.isSendingActive())
@@ -41,13 +46,14 @@ namespace Assets.Scripts.Model.Additional
                 //AddressFamily might be wrong
                 tcpWrite.Client = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
                 tcpWrite.Client.Connect(IPAddress.Parse(destinationIP), destinationPort);
-
+                writer = new BinaryWriter(tcpWrite.GetStream());
             }
         }
 
         private void waitForConnection_DoWork(object sender, DoWorkEventArgs e) {
             Debug.Log("Started background worker");
             int connections = 0;
+
             //Check if there is and argument
             if (e == null && e.Argument == null) {
                 Debug.Log("Error in background worker - not found neccessary argument(bool manyConnections)");
@@ -70,7 +76,10 @@ namespace Assets.Scripts.Model.Additional
                             return;
                         }
                     }
-
+                    if (waitForConnectionsWorker.CancellationPending)
+                    {
+                        return;
+                    }
                 }
                 //If waiting for only one connection
             } else
@@ -78,6 +87,7 @@ namespace Assets.Scripts.Model.Additional
                 while (tcpServerRead.Pending())
                 {
                     tcpRead = tcpServerRead.AcceptTcpClient();
+                    reader = new BinaryReader(tcpRead.GetStream());
                     connections++;
                     waitForConnectionsWorker.ReportProgress(connections);
                     e.Result = connections;
@@ -93,39 +103,86 @@ namespace Assets.Scripts.Model.Additional
             return waitForConnectionsWorkerConnectionsNumber;
         }
 
-        public override bool send(byte[] data, DataType dataType)
+        public bool send1(byte[] data, DataType dataType)
         {
+            Debug.Log("here works 0");
             byte[] dataCombined = base.getDataCombined(data, dataType);
+            Debug.Log("here works 1");
             tcpWrite.GetStream().Write(dataCombined, 0, dataCombined.Length);
+            Debug.Log("here works 2");
             return true; //Need to rethink the return value
         }
 
-        public override Tuple<byte[], int, DataType>  receive()
+        public override bool send(byte[] data, DataType dataType)
         {
-            tcpRead.GetStream().Read(buffer, 0, 1);
-            DataType dataType = (DataType)buffer[0];
+            Debug.Log("Data to send len: " + data.Length);
+            writer.Write(data);
+            return true;
+        }
 
-            tcpRead.GetStream().Read(buffer, 1, 4);
+        public override Tuple<byte[], int, DataType> receive() {
+            //if (tcpRead != null)
+            Debug.Log("TCPRead Connected?:" + tcpRead.Connected);
+            if (tcpRead.GetStream().DataAvailable)
+            {
+                int rec = reader.Read(buffer, 0, bufferLength);
+                Debug.Log("Readed: " + rec);
+                return new Tuple<byte[], int, DataType>(buffer, rec, DataType.LRChannelBuffer);
+            }
+            else {
+                Debug.Log("No data to read in TCPStream ");
+                return new Tuple<byte[], int, DataType>(buffer, 0, DataType.LRChannelBuffer);
+            }
+        }
 
-            //May affect performance
-            int length = int.Parse(String.Concat(buffer[0].ToString(), buffer[1].ToString(),
-                buffer[2].ToString(), buffer[3].ToString()));
-            tcpRead.GetStream().Read(buffer, 0, length);
-            
-            return new Tuple<byte[], int, DataType>(buffer, length, dataType);
+        public Tuple<byte[], int, DataType> receive1()
+        {
+            if (tcpRead.GetStream().DataAvailable)
+            {
+                tcpRead.GetStream().Read(buffer, 0, 1);
+                DataType dataType = (DataType)buffer[0];
+
+                tcpRead.GetStream().Read(buffer, 0, 4);
+
+
+                //May affect performance
+                string space = " ";
+                Debug.Log("RecLenToRead: " + String.Concat(buffer[0].ToString(), space, buffer[1].ToString(), space,
+                    buffer[2].ToString(), space, buffer[3].ToString()));
+                int length = int.Parse(String.Concat(buffer[0].ToString(), buffer[1].ToString(),
+                    buffer[2].ToString(), buffer[3].ToString()));
+
+                
+                tcpRead.GetStream().Read(buffer, 0, length);
+
+                return new Tuple<byte[], int, DataType>(buffer, length, dataType);
+            }
+            else {
+                return new Tuple<byte[], int, DataType>(new byte[] { 0 }, 0, DataType.String);
+            }
         }
 
         public void Clean()
         {
-            if (waitForConnectionsWorker != null) {
+            Debug.Log("Clean Beggining");
+            if (waitForConnectionsWorker != null)
+            {
+                Debug.Log("WaitForConnectionsWorker != null");
                 waitForConnectionsWorker.CancelAsync();
                 waitForConnectionsWorker.Dispose();
+            }
+            else {
+                Debug.Log("WaitForConnectionsWorker == null");
             }
             if (writer != null)
             {
                 //Maybe unnecessary flush
                 writer.Flush();
                 writer.Close();
+            }
+            if (tcpServerRead != null)
+            {
+                tcpServerRead.Stop();
             }
             if (reader != null)
             {
@@ -139,10 +196,14 @@ namespace Assets.Scripts.Model.Additional
             {
                 tcpWrite.Close();
             }
-            if (tcpServerRead != null)
-            {
-                tcpServerRead.Stop();
-            }
+            
+            Debug.Log("Clean Ending");
+        }
+
+        public byte[] getOnlyBuffer(Tuple<byte[], int, DataType> dataWithHeader) {
+            byte[] buffer = new byte[dataWithHeader.Item2];
+            Buffer.BlockCopy(dataWithHeader.Item1, 0, buffer, 0, dataWithHeader.Item2);
+            return buffer;
         }
 
         ~TCPStream()
