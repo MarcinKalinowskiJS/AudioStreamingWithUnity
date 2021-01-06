@@ -86,6 +86,10 @@ public class AudioModel : MonoBehaviour
         
     }
 
+    public void createTmpCon() {
+
+    }
+
     IEnumerator testSending() {
         while (true)
         {
