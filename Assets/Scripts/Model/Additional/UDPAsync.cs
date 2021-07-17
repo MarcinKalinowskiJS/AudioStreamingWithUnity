@@ -34,14 +34,16 @@ namespace Assets.Scripts.Model.Additional
             epServer = new IPEndPoint(System.Net.IPAddress.Any, receivePort);
         }
 
-        public override bool send(byte[] data) {
+        public override bool send(byte[] data, DataType dataType) {
             return false;
         }
 
-        public override byte[] receive() {
+        public override Tuple<byte[], int, DataType> receive() {
             if (base.isReceivingActive())
             {
-                return receiveUDPAsync().Result;
+                return null;
+
+                //return receiveUDPAsync().Result;
             }
             return null;
         }

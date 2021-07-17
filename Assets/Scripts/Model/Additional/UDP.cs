@@ -14,8 +14,9 @@ namespace Assets.Scripts.Model.Additional
         UdpClient udpClient, udpServer; //Server-Receive Client-Send
         System.Net.IPEndPoint epClient, epServer;
 
-        public UDP(string system, ConnectionType connectionType, string receiveIP, int receivePort, string destinationIP, int destinationPort) 
-            : base(system, connectionType, receiveIP, receivePort, destinationIP, destinationPort){
+        public UDP(string system, ConnectionType connectionType, string receiveIP, int receivePort, string destinationIP, int destinationPort)
+            : base(system, connectionType, receiveIP, receivePort, destinationIP, destinationPort)
+        {
             if (base.isReceivingActive())
             {
                 udpServer = new UdpClient(receivePort);
@@ -30,27 +31,33 @@ namespace Assets.Scripts.Model.Additional
             }
         }
 
-        public override bool send(byte[] data) {
+        public override bool send(byte[] data, TransferProtocol.DataType dataType)
+        {
             if (base.isSendingActive())
             {
-                udpClient.Send(data, data.Length);
+                byte[] dataCombined = base.getDataCombined(data, dataType);
+                udpClient.Send(dataCombined, dataCombined.Length);
                 return true;
             }
-            else {
+            else
+            {
                 return false;
             }
         }
 
-        public override byte[] receive()
-        {
+        public override Tuple<byte[], int, DataType> receive()
+        {/*
             if (base.isReceivingActive())
             {
                 if (udpServer.Available > 0)
                 {
                     return udpServer.Receive(ref epServer);
                 }
-            }
-            return null;   
+            }*/
+            return null;
         }
+
     }
 }
+
+//https://stackoverflow.com/questions/20038943/simple-udp-example-to-send-and-receive-data-from-same-socket

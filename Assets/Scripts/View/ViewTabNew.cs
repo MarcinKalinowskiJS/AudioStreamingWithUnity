@@ -26,10 +26,12 @@ public class ViewTabNew : MonoBehaviour
     private float InfoScrollAreaMessageEvery = 0.5f; //Message every x seconds
     private int InfoScrollAreaTextLines = 5; //Max lines of messages
     private List<float> checkMessagesEvery = new List<float>();
-    private float defaultCheckMessageEvery = 0.2f;
+    private float defaultCheckMessageEvery = 0.0f;
     int iterator = 0;
 
-    //HERETODO: repair add connection button
+
+    //HERETODO: Check how this script is added to the GameObject in editor. 
+    //Maybe there are two scripts ViewTabNew added: one in code one in editor.
 
     // Start is called before the first frame update
     void Start()
@@ -40,22 +42,30 @@ public class ViewTabNew : MonoBehaviour
         }
         linkUI();
         //Start info scroll area text coroutine
-        StartCoroutine("WaitAndPrintToInfoScrollArea");
+        StartCoroutine(WaitAndPrintToInfoScrollArea());
+
 
         addTestConnections();
     }
 
     private void addTestConnections()
     {
-        string result = Presenter.Instance.addConnection("Win", NetworkModel.Protocol.UDP, TransferProtocol.ConnectionType.ReceiveAndSend, "192.168.0.3", "65535", "192.168.0.3", "65535");
+        //string result = Presenter.Instance.addConnection("Win", NetworkModel.Protocol.UDP, TransferProtocol.ConnectionType.ReceiveAndSend, "192.168.0.3", "65535", "192.168.0.3", "65535");
         //Adding message to the info panel
-        addTextToInfoScrollArea("Adding connection: 192.168.0.3:65535 - " + result);
+        //addTextToInfoScrollArea("Adding connection: 192.168.0.3:65535 - " + result);
+
+        //List<byte[]> dataTest = NetworkModel.Instance.Receive();
+
+
+        
+        /*
         //Receive data after some time
         if (result.Contains("Added"))
         {
             checkMessagesEvery.Add(defaultCheckMessageEvery);
             StartCoroutine(WaitForReceivingData(checkMessagesEvery.Count-1));
         }
+        */
     }
 
     private void linkUI()
@@ -85,14 +95,30 @@ public class ViewTabNew : MonoBehaviour
 
         //TODO:move refreshReceiveIPDropdown to some more appropiate place
         refreshReceiveIPDropdown();
-
-        
+        //StartCoroutine(WaitForSampleData());
+        Debug.Log("AMI" + AudioModel.Instance);
     }
 
     // Update is called once per frame
     void Update()
     {
+        //iterator++;
+        //Debug.Log("vtnSENDED?: " + NetworkModel.Instance.Send(new byte[] { 28, 14, 121, 190 }, TransferProtocol.DataType.LeftChannel));
+    }
 
+    IEnumerator WaitForSampleData() {
+        string receivedBytes;
+        while (true)
+        {
+            List<byte[]> receivedData = Presenter.Instance.receive();
+
+            if (receivedData != null && receivedData.Count > 0 && receivedData[0] != null)
+            {
+                Debug.Log("R:" + receivedData[0].Length);
+            }
+
+            yield return new WaitForSeconds(0.0f);
+        }
     }
     
     public void addTextToInfoScrollArea(string text)
@@ -188,48 +214,34 @@ public class ViewTabNew : MonoBehaviour
     {
         //NetworkModel.Instance.sendChatText("Test!");
         string message = dataField.text;
-        Presenter.Instance.send(codeStringToByte(message));
+        Presenter.Instance.send(TransferProtocol.codeStringToBytes(message));
         addTextToInfoScrollArea("Sent:" + message);
     }
 
-    public byte[] codeStringToByte(string message)
-    {
-        List<byte> byteMessage = new List<byte>();
-        foreach (char c in message)
-        {
-            byteMessage.Add((byte)c);
-        }
-        return byteMessage.ToArray();
-    }
+    
 
     public void onClickReceive()
     {
         //UnityEngine.Events.UnityEvent receiveDataFromClient = new UnityEngine.Events.UnityEvent();
-        string s = "";
+        /*string s = "";
         List<byte[]> receivedData = Presenter.Instance.receive();
-        s += (receivedData[0] == null ? "" : decodeByteToString(receivedData[0]));
+        s += (receivedData[0] == null ? "" : decodeBytesToString(receivedData[0]));
 
         if (!s.Equals(""))
         {
             addTextToInfoScrollArea("Received:" + s);
-        }
+        }*/
+
+        addTextToInfoScrollArea(AudioModel.Instance.getAverageSampleRateForSecond().ToString());
     }
 
     public string receiveDataAsString()
     {
         List<byte[]> receivedData = Presenter.Instance.receive();
-        return (receivedData[0] == null ? "" : decodeByteToString(receivedData[0]));
+        return (receivedData[0] == null ? "" : TransferProtocol.decodeBytesToString(receivedData[0]));
     }
 
-    public string decodeByteToString(byte[] data)
-    {
-        string s = "";
-            foreach (byte b in data)
-            {
-                s += ((char)b);
-            }
-        return s;
-    }
+    
 
     public string getAll()
     {
@@ -248,6 +260,12 @@ public class ViewTabNew : MonoBehaviour
     {
         return receiveIP.options[receiveIP.value].text;
     }
+
+    private void OnApplicationQuit()
+    {
+        //AudioModel.Instance.Cleanup();
+    }
+
 }
 
 

@@ -43,23 +43,25 @@ public class NetworkModel
 
     public List<byte[]> Receive()
     {
+        /*
         List<byte[]> receivedData = new List<byte[]>();
         foreach (TransferProtocol tp in observers)
         {
-            receivedData.Add(tp.receive());
+            receivedData.Add(tp.receive().Item1);
         }
         if (receivedData.Count > 0)
         {
             return receivedData;
-        }
+        }*/
         return null;
     }
 
-    public bool Send(byte[] data) {
+    public bool Send(byte[] data, DataType dataType) {
         bool sended = false;
+        Debug.Log("Observers: " + observers.Count);
         foreach (TransferProtocol tp in observers) {
             if (tp.isSendingActive()) {
-                tp.send(data);
+                tp.send(data, dataType);
                 sended = true;
             }
         }

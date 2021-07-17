@@ -1,0 +1,2 @@
+latency=200&sampleRate=44100&bits=8&channels=1&audioEncoding=Acelp
+latency=200&sampleRate=44100&bits=8&channels=2&audioEncoding=Acelp

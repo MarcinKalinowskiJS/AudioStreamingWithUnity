@@ -9,6 +9,7 @@ public class AppModel : MonoBehaviour
 
     public GameObject tabAllPanel = null;
     public GameObject tabNewPanel = null;
+    public GameObject tabPlayRecPanel = null;
     //DO STREAMOWANIA AUDIO W UNITY https://forum.unity.com/threads/singleton-monobehaviour-script.99971/ 
     //Then do not ever add it to something, just call MyClass.Instance whenever you need it. Note: If you want it to persist accross 
     //scenes and not be destroyed and recreated add DontDestroyOnLoad(this); in the Awake Function. Another Option if you really want 
@@ -33,6 +34,7 @@ public class AppModel : MonoBehaviour
                 instance = GameObject.Find("AppGameObject").AddComponent<AppModel>();
                 instance.tabNewPanel = GameObject.Find("TabNew");
                 instance.tabAllPanel = GameObject.Find("TabAll");
+                instance.tabPlayRecPanel = GameObject.Find("TabPlayRec");
             }
             return instance;
         }
